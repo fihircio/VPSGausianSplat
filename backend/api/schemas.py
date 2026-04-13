@@ -28,4 +28,5 @@ class SceneProcessResponse(BaseModel):
 class LocalizeResponse(BaseModel):
     position: list[float]
     rotation: list[float]  # [qx, qy, qz, qw]
+    inliers: int
     confidence: float

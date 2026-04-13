@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 import numpy as np
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from backend.models.frame import Frame
