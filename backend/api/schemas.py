@@ -19,6 +19,19 @@ class SceneResponse(BaseModel):
     updated_at: datetime | None = None
 
 
+class FrameResponse(BaseModel):
+    id: int
+    frame_index: int
+    image_path: str
+    intrinsics_json: dict | None
+    pose_json: dict | None
+
+
+class SceneFramesResponse(BaseModel):
+    scene_id: str
+    frames: list[FrameResponse]
+
+
 class SceneProcessResponse(BaseModel):
     scene_id: str
     task_id: str
@@ -30,3 +43,18 @@ class LocalizeResponse(BaseModel):
     rotation: list[float]  # [qx, qy, qz, qw]
     inliers: int
     confidence: float
+
+
+class EvaluationSummary(BaseModel):
+    scene_id: str
+    num_frames: int
+    success_rate: float
+    avg_inliers: float
+    avg_confidence: float
+    avg_translation_error: float
+    avg_rotation_error: float
+
+
+class EvaluationResponse(BaseModel):
+    summary: EvaluationSummary
+    config: dict

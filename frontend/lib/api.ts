@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport } from '../types';
+import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport, EvaluationResponse, SceneFramesResponse } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
@@ -9,6 +9,11 @@ const client = axios.create({
 
 export const api = {
   // Scene Upload
+  async listScenes(): Promise<Scene[]> {
+    const { data } = await client.get<Scene[]>('/scene');
+    return data;
+  },
+
   async uploadScene(file: File, name?: string): Promise<Scene> {
     const formData = new FormData();
     formData.append('file', file);
@@ -39,6 +44,23 @@ export const api = {
     const { data } = await client.post<LocalizeResponse>('/vps/localize', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    return data;
+  },
+
+  // Get Evaluation Summary
+  async getEvaluation(sceneId: string): Promise<EvaluationResponse> {
+    const { data } = await client.get<EvaluationResponse>(`/vps/evaluation/${sceneId}`);
+    return data;
+  },
+
+  // Get Scene Frames (Poses)
+  async getSceneFrames(sceneId: string): Promise<SceneFramesResponse> {
+    const { data } = await client.get<SceneFramesResponse>(`/scene/${sceneId}/frames`);
+    return data;
+  },
+
+  async purgeSceneStorage(sceneId: string): Promise<any> {
+    const { data } = await client.delete(`/scene/${sceneId}/cleanup`);
     return data;
   },
 

@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Layers, Upload, Search, BarChart3, Home } from 'lucide-react';
+import { Layers, Upload, Search, BarChart3, Home, Maximize } from 'lucide-react';
 
 const navItems = [
   { name: 'Home', href: '/', icon: Home },
+  { name: '3D Explorer', href: '/scenes', icon: Maximize },
   { name: 'Upload', href: '/upload', icon: Upload },
   { name: 'Test VPS', href: '/localize', icon: Search },
   { name: 'Investor Deck', href: '/dashboard', icon: BarChart3 },

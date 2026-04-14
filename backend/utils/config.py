@@ -6,7 +6,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=(".env", "../.env"),
+        extra="ignore"
+    )
 
     app_name: str = "VPS Gaussian Splatting Backend"
     app_host: str = "0.0.0.0"
@@ -15,7 +18,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://vps:vps@localhost:5432/vps"
     redis_url: str = "redis://localhost:6379/0"
 
-    storage_root: Path = Field(default_factory=lambda: Path("backend/storage"))
+    storage_root: Path = Field(
+        default_factory=lambda: Path(__file__).resolve().parent.parent.parent / "backend" / "storage"
+    )
     ffmpeg_bin: str = "ffmpeg"
     colmap_bin: str = "colmap"
     gaussian_splatting_repo: str = ""

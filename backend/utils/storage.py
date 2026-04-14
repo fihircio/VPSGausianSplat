@@ -33,3 +33,25 @@ def save_upload(upload: UploadFile, target_dir: Path) -> Path:
     with out_path.open("wb") as f:
         shutil.copyfileobj(upload.file, f)
     return out_path
+
+
+def purge_scene_data(scene_id: str) -> dict[str, bool]:
+    """Deletes temporary reconstruction artifacts while preserving frames and models."""
+    dirs = ensure_scene_dirs(scene_id)
+    results = {}
+    
+    # These are the heavy/temporary folders we can safely delete
+    to_delete = {
+        "raw": dirs["raw_dir"],
+        "recon": dirs["sparse_dir"],
+        "features": dirs["features_dir"]
+    }
+    
+    for key, path in to_delete.items():
+        if path.exists():
+            shutil.rmtree(path, ignore_errors=True)
+            results[key] = True
+        else:
+            results[key] = False
+            
+    return results

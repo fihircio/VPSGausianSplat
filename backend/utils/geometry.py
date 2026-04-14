@@ -62,10 +62,10 @@ def solve_pnp_pose(
     camera_matrix: np.ndarray,
 ) -> tuple[bool, np.ndarray, np.ndarray, np.ndarray]:
     success, rvec, tvec, inliers = cv2.solvePnPRansac(
-        object_points=object_points,
-        image_points=image_points,
-        cameraMatrix=camera_matrix,
-        distCoeffs=None,
+        object_points,
+        image_points,
+        camera_matrix,
+        None,
         iterationsCount=200,
         reprojectionError=8.0,
         confidence=0.99,

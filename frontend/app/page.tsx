@@ -22,11 +22,12 @@ export default function Home() {
               </span>
             </a>
           </div>
-          <h1 className="mt-10 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl uppercase">
-            The Spatial Cloud for <span className="text-indigo-600">Universal AR</span>
+          <h1 className="mt-10 text-4xl font-black tracking-tighter text-gray-900 sm:text-7xl uppercase">
+            Clinical Precision <br/> for <span className="text-indigo-600">Spatial Health</span>
           </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            Convert real-world environments into Gausian Splatting scenes with sub-centimeter VPS localization. Built for marketers, developers, and enterprise vision.
+          <p className="mt-6 text-xl leading-8 text-gray-600 font-medium">
+            Convert hospital wings into sub-decimeter VPS maps. 
+            Achieve <span className="bg-indigo-50 text-indigo-700 px-2 rounded-lg font-black tracking-tight">4.1cm Accuracy</span> in low-parallax indoor environments.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
             <Link

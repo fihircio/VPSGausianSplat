@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 import numpy as np
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, func
 from sqlalchemy.orm import Session
 
 from backend.models.frame import Frame
@@ -79,12 +79,22 @@ class ReconstructionService:
                 str(frames_dir),
                 "--ImageReader.single_camera",
                 "1",
+                "--ImageReader.camera_model",
+                "OPENCV",
+                "--SiftExtraction.max_num_features",
+                "8192",
+                "--SiftExtraction.estimate_affine_shape",
+                "1",
+                "--SiftExtraction.domain_size_pooling",
+                "1",
             ],
             [
                 settings.colmap_bin,
-                "exhaustive_matcher",
+                "sequential_matcher",
                 "--database_path",
                 str(database_path),
+                "--SequentialMatching.overlap",
+                "10",
             ],
             [
                 settings.colmap_bin,
@@ -95,23 +105,68 @@ class ReconstructionService:
                 str(frames_dir),
                 "--output_path",
                 str(sparse_model_path),
-            ],
-            [
-                settings.colmap_bin,
-                "model_converter",
-                "--input_path",
-                str(sparse_model_path / "0"),
-                "--output_path",
-                str(sparse_txt_path),
-                "--output_type",
-                "TXT",
+                "--Mapper.abs_pose_min_num_inliers",
+                "15",
+                "--Mapper.init_min_num_inliers",
+                "50",
+                "--Mapper.init_min_tri_angle",
+                "4",
+                "--Mapper.abs_pose_min_inlier_ratio",
+                "0.1",
+                "--Mapper.min_model_size",
+                "3",
             ],
         ]
 
         for cmd in commands:
             subprocess.run(cmd, check=True, capture_output=True)
 
+        # Find the largest model among potentially multiple disparate reconstructions
+        best_model_dir = sparse_model_path / "0"
+        max_images = 0
+        for model_cand in sparse_model_path.iterdir():
+            if model_cand.is_dir() and (model_cand / "images.bin").exists():
+                # Count images in images.bin would be perfect, but checking file size is a good proxy.
+                # For more accuracy, I'll just use the one with the most points or images if I had a parser.
+                # Here, we will just use the one with the largest images.bin file size as a proxy for complexity.
+                sz = (model_cand / "images.bin").stat().st_size
+                if sz > max_images:
+                    max_images = sz
+                    best_model_dir = model_cand
+
+        # Convert the best model to TXT
+        subprocess.run(
+            [
+                settings.colmap_bin,
+                "model_converter",
+                "--input_path",
+                str(best_model_dir),
+                "--output_path",
+                str(sparse_txt_path),
+                "--output_type",
+                "TXT",
+            ],
+            check=True,
+            capture_output=True,
+        )
+
         ReconstructionService._persist_colmap_poses(scene.id, sparse_txt_path, db)
+ 
+        # Hard Quality Gate: Check registration percentage
+        db.refresh(scene)
+        total_extracted = len(ReconstructionService._list_frame_files(frames_dir))
+        registered_count = db.scalar(
+            select(func.count(Frame.id))
+            .where(Frame.scene_id == scene.id, Frame.pose_json.is_not(None))
+        )
+        reg_ratio = registered_count / total_extracted if total_extracted > 0 else 0
+        
+        if reg_ratio < 0.5:
+            raise ValueError(
+                f"Mapping Quality Too Low: Only {reg_ratio:.1%} frames registered. "
+                "Ensure video has physical movement and sufficient texture."
+            )
+
         scene.sparse_dir = str(sparse_root.resolve())
         db.add(scene)
         db.commit()

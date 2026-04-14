@@ -36,3 +36,31 @@ export interface EvaluationReport {
   recommended_settings: any;
   config_results: any[];
 }
+
+export interface EvaluationSummary {
+  scene_id: string;
+  num_frames: number;
+  success_rate: number;
+  avg_inliers: number;
+  avg_confidence: number;
+  avg_translation_error: number;
+  avg_rotation_error: number;
+}
+
+export interface EvaluationResponse {
+  summary: EvaluationSummary;
+  config: any;
+}
+
+export interface Frame {
+  id: number;
+  frame_index: number;
+  image_path: string;
+  intrinsics_json: any;
+  pose_json: any;
+}
+
+export interface SceneFramesResponse {
+  scene_id: string;
+  frames: Frame[];
+}
