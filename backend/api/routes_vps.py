@@ -7,7 +7,7 @@ from backend.api.schemas import EvaluationResponse, LocalizeResponse
 from backend.services.vps import VPSService
 from backend.utils.config import get_settings
 from backend.utils.db import get_db
-from backend.utils.storage import save_upload
+from backend.utils.storage import save_upload, get_storage
 
 router = APIRouter(prefix="/vps", tags=["vps"])
 
@@ -19,10 +19,9 @@ def localize(
     db: Session = Depends(get_db),
 ) -> LocalizeResponse:
     settings = get_settings()
-    tmp_dir = settings.storage_root / "queries" / scene_id
-    query_path = save_upload(query_image, tmp_dir)
+    query_path = save_upload(query_image, f"queries/{scene_id}")
     try:
-        result = VPSService.localize(scene_id=scene_id, query_image_path=Path(query_path), db=db)
+        result = VPSService.localize(scene_id=scene_id, query_image_path=query_path, db=db)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     except RuntimeError as e:
@@ -35,13 +34,14 @@ def localize(
 def get_evaluation(scene_id: str) -> EvaluationResponse:
     import json
     settings = get_settings()
-    # Path to the best-config evaluation report
-    report_path = settings.storage_root / "debug" / "vps_evaluation_report.json"
+    storage = get_storage()
+    report_remote = "debug/vps_evaluation_report.json"
     
-    if not report_path.exists():
+    if not storage.exists(report_remote):
         raise HTTPException(status_code=404, detail="Evaluation report not found")
     
-    with open(report_path, "r") as f:
+    local_report = storage.ensure_local_copy(report_remote)
+    with local_report.open("r") as f:
         data = json.load(f)
     
     if data.get("scene_id") != scene_id:

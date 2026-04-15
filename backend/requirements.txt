@@ -10,4 +10,8 @@ opencv-python-headless
 numpy
 faiss-cpu
 torch
+torchvision
+kornia
 python-dotenv
+boto3
+azure-storage-blob

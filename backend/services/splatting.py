@@ -12,21 +12,30 @@ from backend.utils.config import get_settings
 class SplattingService:
     @staticmethod
     def run(scene: Scene, db: Session) -> str:
+        storage = get_storage()
         settings = get_settings()
-        sparse_txt = Path(scene.sparse_dir) / "sparse_txt"
-        splat_dir = settings.storage_root / "splats" / scene.id
-        splat_dir.mkdir(parents=True, exist_ok=True)
+        
+        sparse_dir_remote = f"recon/{scene.id}"
+        frames_dir_remote = f"frames/{scene.id}"
+        splat_dir_remote = f"splats/{scene.id}"
+        
+        local_sparse_dir = storage.ensure_local_copy(sparse_dir_remote)
+        local_frames_dir = storage.ensure_local_copy(frames_dir_remote)
+        local_splat_dir = storage.ensure_local_copy(splat_dir_remote)
+        local_splat_dir.mkdir(parents=True, exist_ok=True)
+
+        sparse_txt = local_sparse_dir / "sparse_txt"
 
         gaussian_repo = Path(settings.gaussian_splatting_repo) if settings.gaussian_splatting_repo else None
         if gaussian_repo and (gaussian_repo / "train.py").exists():
-            output_dir = splat_dir / "gaussian_output"
+            output_dir = local_splat_dir / "gaussian_output"
             output_dir.mkdir(parents=True, exist_ok=True)
-            gs_input = splat_dir / "gaussian_input"
+            gs_input = local_splat_dir / "gaussian_input"
             if gs_input.exists():
                 shutil.rmtree(gs_input)
             gs_input.mkdir(parents=True, exist_ok=True)
-            shutil.copytree(Path(scene.frames_dir), gs_input / "images")
-            shutil.copytree(Path(scene.sparse_dir) / "sparse", gs_input / "sparse")
+            shutil.copytree(local_frames_dir, gs_input / "images")
+            shutil.copytree(local_sparse_dir / "sparse", gs_input / "sparse")
             cmd = [
                 "python",
                 str(gaussian_repo / "train.py"),
@@ -39,15 +48,20 @@ class SplattingService:
             ply_candidates = sorted(output_dir.rglob("*.ply"))
             if not ply_candidates:
                 raise RuntimeError("Gaussian Splatting training finished but no .ply found")
-            splat_path = ply_candidates[-1]
+            splat_path_local = ply_candidates[-1]
         else:
-            splat_path = splat_dir / "sparse_points_fallback.ply"
+            splat_path_local = local_splat_dir / "sparse_points_fallback.ply"
             SplattingService._export_colmap_points_to_ply(
                 points_path=sparse_txt / "points3D.txt",
-                output_ply=splat_path,
+                output_ply=splat_path_local,
             )
 
-        scene.splat_path = str(splat_path.resolve())
+        # Sync back to remote if not LOCAL
+        if settings.storage_backend.upper() != "LOCAL":
+            storage.sync_dir_to_remote(local_splat_dir, splat_dir_remote)
+
+        remote_splat_path = f"{splat_dir_remote}/{splat_path_local.name}"
+        scene.splat_path = remote_splat_path
         db.add(scene)
         db.commit()
         return scene.splat_path

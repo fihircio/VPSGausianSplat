@@ -9,8 +9,10 @@ from sqlalchemy.orm import Session
 from backend.models.feature_set import FeatureSet
 from backend.models.frame import Frame
 from backend.models.scene import Scene
-from backend.services.features import FeatureService
+from backend.services.features.feature_factory import FeatureFactory
+from backend.utils.config import get_settings
 from backend.utils.geometry import rotmat_to_quaternion, solve_pnp_pose
+from backend.utils.storage import get_storage
 
 
 class VPSService:
@@ -25,7 +27,8 @@ class VPSService:
         return VPSService.localize_image(scene_id=scene_id, query_image_path=query_image_path, db=db)
 
     @staticmethod
-    def localize_image(scene_id: str, query_image_path: Path, db: Session) -> dict:
+    def localize_image(scene_id: str, query_image_path: str, db: Session) -> dict:
+        storage = get_storage()
         scene = db.get(Scene, scene_id)
         if not scene:
             raise ValueError("Scene not found")
@@ -36,12 +39,18 @@ class VPSService:
         if not feature_set:
             raise RuntimeError("Feature index not built for scene")
 
-        query_keypoints_xy, query_descriptors = FeatureService.extract_orb(query_image_path)
-        if query_descriptors.shape[0] < 8:
-            raise RuntimeError("Not enough ORB features in query image")
+        # Ensure local copies of index and metadata
+        local_index_path = storage.ensure_local_copy(feature_set.index_path)
+        local_metadata_path = storage.ensure_local_copy(feature_set.metadata_path)
+        local_query_path = storage.ensure_local_copy(query_image_path)
 
-        index = faiss.read_index(feature_set.index_path)
-        metadata = np.load(feature_set.metadata_path)
+        extractor = FeatureFactory.get_extractor(feature_set.feature_mode)
+        query_keypoints_xy, query_descriptors = extractor.extract(local_query_path)
+        if query_descriptors.shape[0] < 8:
+            raise RuntimeError(f"Not enough {feature_set.feature_mode} features in query image")
+
+        index = faiss.read_index(str(local_index_path))
+        metadata = np.load(str(local_metadata_path))
         points3d = metadata["points3d"].astype(np.float32)
         point3d_ids = metadata["point3d_ids"].astype(np.int64)
 
@@ -134,9 +143,10 @@ class VPSService:
         ref_width = float(intrinsics.get("width", 0) or 0)
         ref_height = float(intrinsics.get("height", 0) or 0)
 
-        image = cv2.imread(str(query_image_path), cv2.IMREAD_GRAYSCALE)
-        if image is None:
-            raise RuntimeError(f"Unable to read query image: {query_image_path}")
+        storage = get_storage()
+        local_query_path = storage.ensure_local_copy(str(query_image_path))
+        
+        image = cv2.imread(str(local_query_path), cv2.IMREAD_GRAYSCALE)
         query_height, query_width = image.shape[:2]
 
         if ref_width > 0 and ref_height > 0:

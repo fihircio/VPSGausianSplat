@@ -3,11 +3,12 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from backend.api.routes_scene import router as scene_router
 from backend.api.routes_vps import router as vps_router
 from backend.utils.config import get_settings
 from backend.utils.db import init_db
+from backend.utils.storage import get_storage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,8 +24,16 @@ storage_path = str(settings.storage_root.resolve())
 
 app = FastAPI(title="VPS Backend", version="0.1.0", lifespan=lifespan)
 
-# 2. Add Static Mount FIRST (Priority)
-app.mount("/storage", StaticFiles(directory=storage_path), name="storage")
+# 2. Add Static Mount or Cloud Redirect
+if settings.storage_backend.upper() == "LOCAL":
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/storage", StaticFiles(directory=storage_path), name="storage")
+else:
+    @app.get("/storage/{file_path:path}")
+    async def cloud_storage_proxy(file_path: str):
+        storage = get_storage()
+        url = storage.get_url(file_path)
+        return RedirectResponse(url)
 
 # 3. Add Middleware
 app.add_middleware(

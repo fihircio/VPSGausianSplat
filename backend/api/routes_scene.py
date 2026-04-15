@@ -57,24 +57,22 @@ def upload_scene(
     dirs = ensure_scene_dirs(scene_id)
     input_path = save_upload(file, dirs["raw_dir"])
 
+    # suffix and is_video logic...
     suffix = Path(file.filename or "").suffix.lower()
     is_video = (file.content_type or "").startswith("video") or suffix in {
-        ".mp4",
-        ".mov",
-        ".avi",
-        ".mkv",
-        ".webm",
+        ".mp4", ".mov", ".avi", ".mkv", ".webm"
     }
     input_type = "video" if is_video else "image"
 
+    # Store relative paths in DB
     scene = Scene(
         id=scene_id,
         name=name or f"scene-{scene_id[:8]}",
         status="UPLOADED",
         input_type=input_type,
-        input_path=str(input_path.resolve()),
-        frames_dir=str(dirs["frames_dir"].resolve()),
-        sparse_dir=str(dirs["sparse_dir"].resolve()),
+        input_path=f"raw/{scene_id}/{Path(input_path).name}",
+        frames_dir=f"frames/{scene_id}",
+        sparse_dir=f"recon/{scene_id}",
         splat_path=None,
         faiss_index_path=None,
     )
@@ -149,15 +147,16 @@ def get_scene_frames(scene_id: str, db: Session = Depends(get_db)) -> SceneFrame
     # Helper to convert absolute path to web-accessible URL
     storage_base = settings.storage_root.resolve()
 
-    def to_web_path(abs_path: str) -> str:
-        try:
-            # Strip the absolute storage root and prepend /storage mount point
-            abs_p = Path(abs_path).resolve()
-            rel = abs_p.relative_to(storage_base)
-            return f"/storage/{rel}"
-        except (ValueError, AttributeError):
-            # Fallback if path logic fails
-            return abs_path
+    def to_web_path(p: str) -> str:
+        if not p: return p
+        # If it's already an absolute path (legacy), try to relativize
+        if p.startswith("/"):
+            try:
+                rel = Path(p).resolve().relative_to(storage_base)
+                return f"/storage/{rel}"
+            except ValueError:
+                return p
+        return f"/storage/{p}"
 
     return SceneFramesResponse(
         scene_id=scene_id,

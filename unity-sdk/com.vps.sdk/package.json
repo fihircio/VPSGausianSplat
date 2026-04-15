@@ -1,0 +1,18 @@
+{
+  "name": "com.vps.sdk",
+  "version": "0.1.0",
+  "displayName": "VPS Gaussian Splat SDK",
+  "description": "Unity SDK for VPSGausianSplat Cloud API. Handles frame capture, cloud localization, and map space alignment.",
+  "unity": "2021.3",
+  "author": {
+    "name": "VPS SDK Lead",
+    "email": "lead@vps.com"
+  },
+  "dependencies": {},
+  "keywords": [
+    "vps",
+    "gaussian splatting",
+    "ar",
+    "localization"
+  ]
+}

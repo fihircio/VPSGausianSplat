@@ -14,6 +14,7 @@ class FeatureSet(Base):
     index_path: Mapped[str] = mapped_column(Text)
     metadata_path: Mapped[str] = mapped_column(Text)
     num_descriptors: Mapped[int] = mapped_column(Integer, default=0)
+    feature_mode: Mapped[str] = mapped_column(Text, default="ORB")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     scene = relationship("Scene", back_populates="feature_sets")

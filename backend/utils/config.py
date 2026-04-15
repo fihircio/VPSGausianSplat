@@ -26,6 +26,18 @@ class Settings(BaseSettings):
     gaussian_splatting_repo: str = ""
     default_video_fps: int = 2
     orb_nfeatures: int = 3000
+    feature_mode: str = "ORB"  # ORB or SUPERPOINT
+    sp_max_keypoints: int = 2048
+    sp_conf_threshold: float = 0.001
+
+    # Storage Settings
+    storage_backend: str = "LOCAL"  # LOCAL, S3, or AZURE
+    s3_bucket: str = ""
+    s3_region: str = "us-east-1"
+    s3_access_key: str = ""
+    s3_secret_key: str = ""
+    azure_connection_string: str = ""
+    azure_container: str = "vps-storage"
 
 
 @lru_cache
