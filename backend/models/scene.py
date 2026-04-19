@@ -20,6 +20,8 @@ class Scene(Base):
     splat_path: Mapped[str | None] = mapped_column(Text, nullable=True)
     faiss_index_path: Mapped[str | None] = mapped_column(Text, nullable=True)
     feature_meta_path: Mapped[str | None] = mapped_column(Text, nullable=True)
+    progress_percent: Mapped[float] = mapped_column(default=0.0)
+    current_task_label: Mapped[str | None] = mapped_column(String(128), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -28,5 +30,8 @@ class Scene(Base):
 
     frames: Mapped[List["Frame"]] = relationship(back_populates="scene", cascade="all, delete-orphan")
     feature_sets: Mapped[List["FeatureSet"]] = relationship(
+        back_populates="scene", cascade="all, delete-orphan"
+    )
+    anchors: Mapped[List["Anchor"]] = relationship(
         back_populates="scene", cascade="all, delete-orphan"
     )

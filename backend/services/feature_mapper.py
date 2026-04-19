@@ -14,6 +14,7 @@ from backend.models.scene import Scene
 from backend.services.colmap_loader import ColmapImage, ColmapLoader, ColmapPoint3D
 from backend.services.features.feature_factory import FeatureFactory
 from backend.utils.config import get_settings
+from backend.utils.storage import get_storage
 
 
 @dataclass

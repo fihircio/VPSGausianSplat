@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from backend.models.scene import Scene
 from backend.utils.config import get_settings
+from backend.utils.storage import get_storage
 
 
 class SplattingService:

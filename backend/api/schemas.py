@@ -13,6 +13,8 @@ class SceneResponse(BaseModel):
     sparse_dir: str | None
     splat_path: str | None
     faiss_index_path: str | None
+    progress_percent: float = 0.0
+    current_task_label: str | None = None
     error_message: str | None
     frame_count: int = 0
     created_at: datetime
@@ -58,3 +60,24 @@ class EvaluationSummary(BaseModel):
 class EvaluationResponse(BaseModel):
     summary: EvaluationSummary
     config: dict
+
+
+# ---------------------------------------------------------------------------
+# Anchor schemas
+# ---------------------------------------------------------------------------
+
+class AnchorCreate(BaseModel):
+    label: str = "Anchor"
+    position: list[float]  # [x, y, z]
+    rotation: list[float] = [0.0, 0.0, 0.0, 1.0]  # [qx, qy, qz, qw]
+    glb_url: str | None = None
+
+
+class AnchorResponse(BaseModel):
+    id: str
+    scene_id: str
+    label: str
+    position: list[float]
+    rotation: list[float]
+    glb_url: str | None
+    created_at: datetime

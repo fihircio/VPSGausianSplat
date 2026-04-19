@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from backend.models.feature_set import FeatureSet
 from backend.models.frame import Frame
 from backend.models.scene import Scene
+from backend.services.feature_service import FeatureService
 from backend.services.features.feature_factory import FeatureFactory
 from backend.utils.config import get_settings
 from backend.utils.geometry import rotmat_to_quaternion, solve_pnp_pose

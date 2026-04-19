@@ -6,11 +6,14 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from backend.api.schemas import (
+    AnchorCreate,
+    AnchorResponse,
     FrameResponse,
     SceneFramesResponse,
     SceneProcessResponse,
     SceneResponse,
 )
+from backend.models.anchor import Anchor
 from backend.models.frame import Frame
 from backend.models.scene import Scene
 from backend.utils.config import get_settings
@@ -38,6 +41,8 @@ def list_scenes(db: Session = Depends(get_db)) -> list[SceneResponse]:
                 sparse_dir=scene.sparse_dir,
                 splat_path=scene.splat_path,
                 faiss_index_path=scene.faiss_index_path,
+                progress_percent=scene.progress_percent,
+                current_task_label=scene.current_task_label,
                 error_message=scene.error_message,
                 frame_count=frame_count,
                 created_at=scene.created_at,
@@ -90,6 +95,8 @@ def upload_scene(
         sparse_dir=scene.sparse_dir,
         splat_path=scene.splat_path,
         faiss_index_path=scene.faiss_index_path,
+        progress_percent=scene.progress_percent,
+        current_task_label=scene.current_task_label,
         error_message=scene.error_message,
         frame_count=0,
         created_at=scene.created_at,
@@ -126,6 +133,8 @@ def get_scene(scene_id: str, db: Session = Depends(get_db)) -> SceneResponse:
         sparse_dir=scene.sparse_dir,
         splat_path=scene.splat_path,
         faiss_index_path=scene.faiss_index_path,
+        progress_percent=scene.progress_percent,
+        current_task_label=scene.current_task_label,
         error_message=scene.error_message,
         frame_count=frame_count,
         created_at=scene.created_at,
@@ -185,3 +194,103 @@ def cleanup_scene_storage(scene_id: str, db: Session = Depends(get_db)):
         "purged": results,
         "message": "Heavy raw data and reconstruction artifacts successfully removed."
     }
+
+
+# ---------------------------------------------------------------------------
+# Tile Manifest endpoint
+# ---------------------------------------------------------------------------
+
+@router.get("/{scene_id}/tiles/manifest")
+def get_tile_manifest(scene_id: str, db: Session = Depends(get_db)):
+    """
+    Return the octree tile manifest JSON for the scene.
+    The manifest is written by backend/scripts/tile_splat.py prior to calling this.
+    """
+    settings = get_settings()
+    manifest_path = (
+        settings.storage_root / "splats" / scene_id / "tiles" / "tile_manifest.json"
+    )
+    if not manifest_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Tile manifest not found. Run tile_splat.py for this scene first.",
+        )
+    import json
+    return json.loads(manifest_path.read_text())
+
+
+# ---------------------------------------------------------------------------
+# Anchor CRUD endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/{scene_id}/anchors", response_model=list[AnchorResponse])
+def list_anchors(scene_id: str, db: Session = Depends(get_db)) -> list[AnchorResponse]:
+    """List all anchors for a scene."""
+    scene = db.get(Scene, scene_id)
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    anchors = db.scalars(
+        select(Anchor).where(Anchor.scene_id == scene_id).order_by(Anchor.created_at.asc())
+    ).all()
+    return [
+        AnchorResponse(
+            id=a.id,
+            scene_id=a.scene_id,
+            label=a.label,
+            position=[a.position_x, a.position_y, a.position_z],
+            rotation=[a.rotation_x, a.rotation_y, a.rotation_z, a.rotation_w],
+            glb_url=a.glb_url,
+            created_at=a.created_at,
+        )
+        for a in anchors
+    ]
+
+
+@router.post("/{scene_id}/anchors", response_model=AnchorResponse, status_code=201)
+def create_anchor(
+    scene_id: str, body: AnchorCreate, db: Session = Depends(get_db)
+) -> AnchorResponse:
+    """Persist a new 3D anchor for a scene."""
+    scene = db.get(Scene, scene_id)
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    if len(body.position) != 3:
+        raise HTTPException(status_code=422, detail="position must be [x, y, z]")
+    rot = body.rotation if len(body.rotation) == 4 else [0.0, 0.0, 0.0, 1.0]
+
+    anchor = Anchor(
+        scene_id=scene_id,
+        label=body.label,
+        position_x=body.position[0],
+        position_y=body.position[1],
+        position_z=body.position[2],
+        rotation_x=rot[0],
+        rotation_y=rot[1],
+        rotation_z=rot[2],
+        rotation_w=rot[3],
+        glb_url=body.glb_url,
+    )
+    db.add(anchor)
+    db.commit()
+    db.refresh(anchor)
+    return AnchorResponse(
+        id=anchor.id,
+        scene_id=anchor.scene_id,
+        label=anchor.label,
+        position=[anchor.position_x, anchor.position_y, anchor.position_z],
+        rotation=[anchor.rotation_x, anchor.rotation_y, anchor.rotation_z, anchor.rotation_w],
+        glb_url=anchor.glb_url,
+        created_at=anchor.created_at,
+    )
+
+
+@router.delete("/{scene_id}/anchors/{anchor_id}", status_code=204)
+def delete_anchor(
+    scene_id: str, anchor_id: str, db: Session = Depends(get_db)
+) -> None:
+    """Remove an anchor by ID."""
+    anchor = db.get(Anchor, anchor_id)
+    if not anchor or anchor.scene_id != scene_id:
+        raise HTTPException(status_code=404, detail="Anchor not found")
+    db.delete(anchor)
+    db.commit()

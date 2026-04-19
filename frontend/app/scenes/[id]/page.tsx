@@ -189,9 +189,30 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
                    </p>
                 </div>
               ) : (
-                <div className="text-center">
-                  <Activity className="h-12 w-12 text-indigo-500 animate-bounce mx-auto mb-4" />
-                  <p className="text-xs font-black text-indigo-400 animate-pulse uppercase tracking-[0.2em]">Calculating Sparse Point Cloud</p>
+                <div className="text-center w-full max-w-md px-8">
+                  <Activity className="h-12 w-12 text-indigo-500 animate-bounce mx-auto mb-6" />
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <p className="text-xs font-black text-indigo-500 uppercase tracking-widest animate-pulse">
+                        {scene.current_task_label || "Calculating Spatial Layer..."}
+                      </p>
+                      <span className="text-xs font-black text-indigo-600">{Math.round(scene.progress_percent)}%</span>
+                    </div>
+                    
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden border border-gray-300">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${scene.progress_percent}%` }}
+                        transition={{ duration: 0.5 }}
+                        className="bg-indigo-500 h-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                      />
+                    </div>
+                    
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight italic">
+                      Please wait. Reconstructing sparse point cloud and indexing feature volumes.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

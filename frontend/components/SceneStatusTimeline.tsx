@@ -12,12 +12,41 @@ const stages: { key: Status; label: string }[] = [
   { key: 'READY', label: 'Ready' },
 ];
 
-export default function SceneStatusTimeline({ status }: { status: Status }) {
+export default function SceneStatusTimeline({ 
+  status, 
+  progress = 0, 
+  currentTask = null 
+}: { 
+  status: Status; 
+  progress?: number;
+  currentTask?: string | null;
+}) {
   const currentIdx = stages.findIndex(s => s.key === status);
   const isFailed = status === 'FAILED';
+  const isProcessing = status === 'PROCESSING';
 
   return (
-    <div className="w-full py-6">
+    <div className="w-full py-6 space-y-8">
+      {/* Progress Bar for Processing State */}
+      {isProcessing && (
+        <div className="w-full px-4">
+          <div className="flex justify-between items-end mb-2">
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-indigo-600 animate-pulse">
+                {currentTask || 'Processing...'}
+              </span>
+            </div>
+            <span className="text-sm font-bold text-indigo-700">{Math.round(progress)}%</span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden border border-gray-200">
+            <div 
+              className="bg-indigo-600 h-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(79,70,229,0.4)]"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         {stages.map((stage, idx) => {
           const isCompleted = currentIdx > idx || status === 'READY';

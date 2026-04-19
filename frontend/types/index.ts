@@ -8,6 +8,8 @@ export interface Scene {
   sparse_dir: string | null;
   splat_path: string | null;
   faiss_index_path: string | null;
+  progress_percent: number;
+  current_task_label: string | null;
   error_message: string | null;
   frame_count: number;
   created_at: string;
@@ -63,4 +65,41 @@ export interface Frame {
 export interface SceneFramesResponse {
   scene_id: string;
   frames: Frame[];
+}
+
+export interface Anchor {
+  id: string;
+  scene_id: string;
+  label: string;
+  position: [number, number, number];
+  rotation: [number, number, number, number]; // [qx, qy, qz, qw]
+  glb_url: string | null;
+  created_at: string;
+}
+
+export interface AnchorCreate {
+  label: string;
+  position: [number, number, number];
+  rotation?: [number, number, number, number];
+  glb_url?: string | null;
+}
+
+export interface TileNode {
+  node_id: string;
+  depth: number;
+  bbox_min: [number, number, number];
+  bbox_max: [number, number, number];
+  point_count: number;
+  is_leaf: boolean;
+  children: string[];
+}
+
+export interface TileManifest {
+  scene_id: string;
+  generated_at: string;
+  total_points: number;
+  max_points_per_tile: number;
+  bbox_min: [number, number, number];
+  bbox_max: [number, number, number];
+  nodes: TileNode[];
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport, EvaluationResponse, SceneFramesResponse } from '../types';
+import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport, EvaluationResponse, SceneFramesResponse, Anchor, AnchorCreate } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
@@ -62,6 +62,27 @@ export const api = {
   async purgeSceneStorage(sceneId: string): Promise<any> {
     const { data } = await client.delete(`/scene/${sceneId}/cleanup`);
     return data;
+  },
+
+  // Tile Management
+  async getTileManifest(sceneId: string): Promise<any> {
+    const { data } = await client.get(`/scene/${sceneId}/tiles/manifest`);
+    return data;
+  },
+
+  // Anchors
+  async listAnchors(sceneId: string): Promise<Anchor[]> {
+    const { data } = await client.get<Anchor[]>(`/scene/${sceneId}/anchors`);
+    return data;
+  },
+
+  async createAnchor(sceneId: string, anchor: AnchorCreate): Promise<Anchor> {
+    const { data } = await client.post<Anchor>(`/scene/${sceneId}/anchors`, anchor);
+    return data;
+  },
+
+  async deleteAnchor(sceneId: string, anchorId: string): Promise<void> {
+    await client.delete(`/scene/${sceneId}/anchors/${anchorId}`);
   },
 
   // Mock Dashboard Data (Fall-back)

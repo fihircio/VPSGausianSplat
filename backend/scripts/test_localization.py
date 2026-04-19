@@ -13,7 +13,7 @@ from sqlalchemy import select
 from backend.models.frame import Frame
 from backend.models.scene import Scene
 from backend.services.feature_mapper import FeatureMapper
-from backend.services.features import FeatureService
+from backend.services.feature_service import FeatureService
 from backend.utils.db import SessionLocal
 from backend.utils.config import get_settings
 

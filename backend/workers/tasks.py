@@ -17,16 +17,43 @@ def process_scene_task(scene_id: str, force_rebuild: bool = False) -> dict:
             return {"scene_id": scene_id, "status": "FAILED", "error": "Scene not found"}
 
         scene.status = "PROCESSING"
+        scene.progress_percent = 5.0
+        scene.current_task_label = "Initializing pipeline..."
         scene.error_message = None
         db.add(scene)
         db.commit()
 
+        # Phase 1: Frame Extraction
+        scene.progress_percent = 10.0
+        scene.current_task_label = "Extracting video frames..."
+        db.add(scene)
+        db.commit()
         ReconstructionService.extract_frames(scene, db, force_rebuild=force_rebuild)
+
+        # Phase 2: SfM (COLMAP)
+        scene.progress_percent = 25.0
+        scene.current_task_label = "Running Structure-from-Motion (COLMAP)..."
+        db.add(scene)
+        db.commit()
         ReconstructionService.run_colmap(scene, db)
+
+        # Phase 3: Gaussian Splatting
+        scene.progress_percent = 60.0
+        scene.current_task_label = "Training Gaussian Splatting model..."
+        db.add(scene)
+        db.commit()
         SplattingService.run(scene, db)
+
+        # Phase 4: VPS Indexing
+        scene.progress_percent = 85.0
+        scene.current_task_label = "Building VPS feature database..."
+        db.add(scene)
+        db.commit()
         VPSService.build_feature_db(scene, db)
 
         scene.status = "READY"
+        scene.progress_percent = 100.0
+        scene.current_task_label = "Processing complete"
         db.add(scene)
         db.commit()
         return {"scene_id": scene_id, "status": "READY"}
