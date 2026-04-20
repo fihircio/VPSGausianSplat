@@ -103,3 +103,12 @@ export interface TileManifest {
   bbox_max: [number, number, number];
   nodes: TileNode[];
 }
+
+export interface ActiveAgent {
+  id: string;
+  name: string;
+  role: string;
+  position: [number, number, number];
+  rotation: [number, number, number, number];
+  last_seen: string;
+}

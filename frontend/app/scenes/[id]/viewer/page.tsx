@@ -8,22 +8,79 @@ import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 import { Activity, ArrowLeft, Maximize, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
-import { Scene } from '@/types';
+import { Scene, Frame, Anchor, ActiveAgent } from '@/types';
+import AgentSidebar from '@/components/AgentSidebar';
+import { Users } from 'lucide-react';
 
 export default function SceneViewerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const containerRef = useRef<HTMLDivElement>(null);
   const [sceneData, setSceneData] = useState<Scene | null>(null);
-  const [frames, setFrames] = useState<any[]>([]);
-  const [selectedFrame, setSelectedFrame] = useState<any>(null);
+  const [frames, setFrames] = useState<Frame[]>([]);
+  const [anchors, setAnchors] = useState<Anchor[]>([]);
+  const [agents, setAgents] = useState<ActiveAgent[]>([]);
+  const [showAgents, setShowAgents] = useState(false);
+  const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  
+  const agentsRef = useRef<Record<string, THREE.Group>>({});
+  const agentsDataRef = useRef<ActiveAgent[]>([]);
+  const anchorsDataRef = useRef<Anchor[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     api.getScene(id).then(setSceneData).catch(console.error);
     api.getSceneFrames(id).then(res => setFrames(res.frames)).catch(console.error);
+    api.listAnchors(id).then(data => {
+      setAnchors(data);
+      anchorsDataRef.current = data;
+    }).catch(console.error);
   }, [id]);
+
+  // Real-time Agent Sync via WebSocket
+  useEffect(() => {
+    if (!sceneData) return;
+    
+    const wsUrl = `ws://localhost:8000/vps/ws/agents/${id}`;
+    const ws = new WebSocket(wsUrl);
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'agent_update') {
+          setAgents(prev => {
+            const index = prev.findIndex(a => a.id === data.agent_id);
+            const updatedAgent: ActiveAgent = {
+              id: data.agent_id,
+              name: data.name || "Remote Agent",
+              role: data.role || "Clinician",
+              position: data.position,
+              rotation: data.rotation,
+              last_seen: new Date().toISOString()
+            };
+
+            let next;
+            if (index >= 0) {
+              next = [...prev];
+              next[index] = updatedAgent;
+            } else {
+              next = [...prev, updatedAgent];
+            }
+            agentsDataRef.current = next;
+            return next;
+          });
+        }
+      } catch (err) {
+        console.error("WS Message Error:", err);
+      }
+    };
+
+    ws.onopen = () => console.log("Spatial Sync Connected");
+    ws.onclose = () => console.log("Spatial Sync Disconnected");
+
+    return () => ws.close();
+  }, [sceneData, id]);
 
   useEffect(() => {
     if (!containerRef.current || !sceneData) return;
@@ -123,8 +180,58 @@ export default function SceneViewerPage({ params }: { params: Promise<{ id: stri
     };
     window.addEventListener('resize', handleResize);
 
+    // --- Anchors ---
+    const renderAnchors = () => {
+      anchorsDataRef.current.forEach(a => {
+        const pinGeom = new THREE.SphereGeometry(0.08, 16, 16);
+        const pinMat = new THREE.MeshStandardMaterial({ 
+          color: 0xec4899, 
+          emissive: 0xec4899,
+          emissiveIntensity: 1.0
+        });
+        const pin = new THREE.Mesh(pinGeom, pinMat);
+        pin.position.set(a.position[0], a.position[1], a.position[2]);
+        
+        const ringGeom = new THREE.RingGeometry(0.12, 0.14, 32);
+        ringGeom.rotateX(-Math.PI/2);
+        const ring = new THREE.Mesh(ringGeom, pinMat);
+        ring.position.set(a.position[0], a.position[1], a.position[2]);
+        
+        scene.add(pin);
+        scene.add(ring);
+      });
+    };
+    renderAnchors();
+
     const animate = () => {
       requestAnimationFrame(animate);
+      
+      // Update Agents from Ref
+      agentsDataRef.current.forEach(agent => {
+        let group = agentsRef.current[agent.id];
+        if (!group) {
+          group = new THREE.Group();
+          const markerGeom = new THREE.CylinderGeometry(0, 0.1, 0.3, 4);
+          const markerMat = new THREE.MeshBasicMaterial({ color: 0x4f46e5 });
+          const marker = new THREE.Mesh(markerGeom, markerMat);
+          marker.rotation.x = Math.PI / 2;
+          
+          const ring = new THREE.Mesh(
+            new THREE.RingGeometry(0.2, 0.22, 32),
+            new THREE.MeshBasicMaterial({ color: 0x4f46e5, transparent: true, opacity: 0.5 })
+          );
+          ring.rotation.x = -Math.PI / 2;
+          
+          group.add(marker);
+          group.add(ring);
+          scene.add(group);
+          agentsRef.current[agent.id] = group;
+        }
+        
+        // Smoothly move towards target
+        group.position.lerp(new THREE.Vector3(agent.position[0], agent.position[1], agent.position[2]), 0.1);
+      });
+
       controls.update();
       renderer.render(scene, camera);
     };
@@ -145,15 +252,28 @@ export default function SceneViewerPage({ params }: { params: Promise<{ id: stri
         <button onClick={() => router.back()} className="p-4 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl text-white hover:bg-white/10 transition-all pointer-events-auto shadow-2xl">
           <ArrowLeft className="h-6 w-6" />
         </button>
-        <div className="text-right">
-          <div className="px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full inline-block backdrop-blur-xl">
-             <span className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">Clinical Visualizer 2.0</span>
+        <div className="flex items-start space-x-4">
+          <button 
+            onClick={() => setShowAgents(!showAgents)} 
+            className={cn(
+              "p-4 backdrop-blur-3xl border rounded-3xl transition-all pointer-events-auto shadow-2xl",
+              showAgents ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-400" : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+            )}
+          >
+            <Users className="h-6 w-6" />
+          </button>
+          <div className="text-right">
+            <div className="px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full inline-block backdrop-blur-xl">
+               <span className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">Clinical Visualizer 2.0</span>
+            </div>
+            <h1 className="mt-4 text-4xl font-black text-white uppercase tracking-tighter">{sceneData?.name || "Initializing..."}</h1>
           </div>
-          <h1 className="mt-4 text-4xl font-black text-white uppercase tracking-tighter">{sceneData?.name || "Initializing..."}</h1>
         </div>
       </div>
 
       <div ref={containerRef} className="h-full w-full" />
+
+      <AgentSidebar isOpen={showAgents} agents={agents} />
 
       {/* Frame Preview HUD (Bottom Middle) */}
       <AnimatePresence>

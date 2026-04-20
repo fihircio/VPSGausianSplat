@@ -81,3 +81,25 @@ class AnchorResponse(BaseModel):
     rotation: list[float]
     glb_url: str | None
     created_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Agent Sync schemas
+# ---------------------------------------------------------------------------
+
+class AgentPoseUpdate(BaseModel):
+    agent_id: str
+    name: str | None = None
+    role: str | None = None
+    position: list[float]  # [x, y, z]
+    rotation: list[float]  # [qx, qy, qz, qw]
+
+
+class AgentSessionResponse(BaseModel):
+    id: str
+    scene_id: str
+    name: str
+    role: str
+    position: list[float]
+    rotation: list[float]
+    last_seen: datetime

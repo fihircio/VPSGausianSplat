@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import cv2
@@ -29,17 +30,63 @@ class VPSService:
 
     @staticmethod
     def localize_image(scene_id: str, query_image_path: str, db: Session) -> dict:
-        storage = get_storage()
         scene = db.get(Scene, scene_id)
         if not scene:
             raise ValueError("Scene not found")
 
+        # Get the primary feature set (usually ORB or DISK)
         feature_set = db.scalar(
             select(FeatureSet).where(FeatureSet.scene_id == scene_id).order_by(desc(FeatureSet.id))
         )
         if not feature_set:
-            raise RuntimeError("Feature index not built for scene")
+            raise RuntimeError("No feature index built for scene")
 
+        result = None
+        error = None
+
+        try:
+            result = VPSService._localize_with_feature_set(scene_id, query_image_path, feature_set, db)
+        except Exception as e:
+            error = e
+
+        # Fallback logic: boost confidence or try SIFT if primary failed/low confidence
+        CONFIDENCE_THRESHOLD = 0.25
+        INLIER_THRESHOLD = 30
+
+        needs_fallback = (
+            result is None or 
+            result.get("confidence", 0) < CONFIDENCE_THRESHOLD or 
+            result.get("inliers", 0) < INLIER_THRESHOLD
+        )
+
+        if needs_fallback and feature_set.feature_mode.upper() != "SIFT":
+            sift_set = db.scalar(
+                select(FeatureSet)
+                .where(FeatureSet.scene_id == scene_id, FeatureSet.feature_mode == "SIFT")
+                .order_by(desc(FeatureSet.id))
+            )
+            if sift_set:
+                try:
+                    sift_result = VPSService._localize_with_feature_set(scene_id, query_image_path, sift_set, db)
+                    # If SIFT is better, use it
+                    if result is None or sift_result.get("confidence", 0) > result.get("confidence", 0):
+                        result = sift_result
+                        result["mode"] = "SIFT_FALLBACK"
+                except Exception:
+                    pass # If SIFT also fails, stick with primary error or result
+
+        if result is None:
+            raise error or RuntimeError("Localization failed")
+
+        # Apply calibration if exists
+        result = VPSService._apply_calibration(scene_id, result)
+        
+        return result
+
+    @staticmethod
+    def _localize_with_feature_set(scene_id: str, query_image_path: str, feature_set: FeatureSet, db: Session) -> dict:
+        storage = get_storage()
+        
         # Ensure local copies of index and metadata
         local_index_path = storage.ensure_local_copy(feature_set.index_path)
         local_metadata_path = storage.ensure_local_copy(feature_set.metadata_path)
@@ -71,6 +118,7 @@ class VPSService:
         success, rvec, tvec, inliers = solve_pnp_pose(object_points, image_points, camera_matrix)
         inlier_count = int(len(inliers))
         confidence = float(inlier_count / max(total_matches, 1))
+        
         if not success or inlier_count < VPSService.MIN_INLIERS:
             raise RuntimeError(
                 f"Localization rejected: {inlier_count} inliers from {total_matches} matches"
@@ -86,7 +134,48 @@ class VPSService:
             "rotation": [float(rotation[0]), float(rotation[1]), float(rotation[2]), float(rotation[3])],
             "inliers": inlier_count,
             "confidence": confidence,
+            "mode": feature_set.feature_mode
         }
+
+    @staticmethod
+    def _apply_calibration(scene_id: str, result: dict) -> dict:
+        storage = get_storage()
+        cal_path_remote = f"features/{scene_id}/calibration.json"
+        
+        try:
+            local_cal_path = storage.ensure_local_copy(cal_path_remote)
+            if not local_cal_path.exists():
+                return result
+                
+            with open(local_cal_path, "r") as f:
+                cal = json.load(f)
+            
+            # Calibration transform (similarity): P_global = s * R_global * P_local + t_global
+            s = cal.get("scale", 1.0)
+            R = np.array(cal.get("rotation_matrix", [[1,0,0],[0,1,0],[0,0,1]]))
+            t = np.array(cal.get("translation", [0,0,0]))
+            
+            pos_local = np.array(result["position"])
+            pos_global = s * (R @ pos_local) + t
+            
+            # Rotation alignment: R_global_cam = R_cal * R_local_cam
+            # Result stores [x,y,z,w] from rotmat_to_quaternion
+            # We need to convert back to matrix, multiply, and convert back to quat
+            from backend.utils.geometry import qvec_to_rotmat
+            # result["rotation"] is [x,y,z,w]. qvec_to_rotmat expects [w,x,y,z]
+            q_local = result["rotation"]
+            R_local = qvec_to_rotmat([q_local[3], q_local[0], q_local[1], q_local[2]])
+            R_global = R @ R_local
+            q_global = rotmat_to_quaternion(R_global)
+            
+            result["position"] = pos_global.tolist()
+            result["rotation"] = q_global
+            result["calibrated"] = True
+            
+        except Exception as e:
+            print(f"Failed to apply calibration: {e}")
+            
+        return result
 
     @staticmethod
     def _collect_correspondences(

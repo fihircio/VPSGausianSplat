@@ -59,6 +59,19 @@ class DISKExtractor(BaseExtractor):
         return keypoints, descriptors
 
 
+class SIFTExtractor(BaseExtractor):
+    def extract(self, image_path: Path) -> tuple[np.ndarray, np.ndarray]:
+        image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            raise RuntimeError(f"Unable to read image: {image_path}")
+        sift = cv2.SIFT_create()
+        keypoints, descriptors = sift.detectAndCompute(image, None)
+        if descriptors is None or not keypoints:
+            return np.empty((0, 2), dtype=np.float32), np.empty((0, 128), dtype=np.float32)
+        keypoints_xy = np.array([kp.pt for kp in keypoints], dtype=np.float32)
+        return keypoints_xy, descriptors.astype(np.float32)
+
+
 class FeatureFactory:
     _extractors: dict[str, BaseExtractor] = {}
 
@@ -68,6 +81,8 @@ class FeatureFactory:
         if mode not in FeatureFactory._extractors:
             if mode == "SUPERPOINT" or mode == "DISK":
                 FeatureFactory._extractors[mode] = DISKExtractor()
+            elif mode == "SIFT":
+                FeatureFactory._extractors[mode] = SIFTExtractor()
             else:
                 FeatureFactory._extractors[mode] = ORBExtractor()
         return FeatureFactory._extractors[mode]

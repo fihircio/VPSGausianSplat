@@ -58,10 +58,17 @@ class FeatureMapper:
         global_point_ids: list[np.ndarray] = []
         global_frame_ids: list[np.ndarray] = []
         mapped_counts: dict[str, int] = {}
-        total_orb = 0
+        total_features = 0
         total_mapped = 0
+        total_orb = 0
 
         for frame in frames:
+            image_name = Path(frame.image_path).name
+            colmap_image = images_by_name.get(image_name)
+            if not colmap_image:
+                print(f"Skipping frame {image_name}: not registered in COLMAP")
+                continue
+
             # Ensure frame is local. image_path in DB is remote-compatible.
             local_image_path = storage.ensure_local_copy(frame.image_path)
             

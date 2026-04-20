@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -33,5 +33,8 @@ class Scene(Base):
         back_populates="scene", cascade="all, delete-orphan"
     )
     anchors: Mapped[List["Anchor"]] = relationship(
+        back_populates="scene", cascade="all, delete-orphan"
+    )
+    agent_sessions: Mapped[List["AgentSession"]] = relationship(
         back_populates="scene", cascade="all, delete-orphan"
     )
