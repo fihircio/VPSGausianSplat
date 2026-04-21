@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -56,18 +57,32 @@ async def agent_sync_websocket(websocket: WebSocket, scene_id: str):
     WebSocket endpoint for real-time spatial sync.
     """
     await sync_manager.connect(scene_id, websocket)
+    
+    # 1. Send initial state to the new client
+    initial_state = sync_manager.get_scene_state(scene_id)
+    if initial_state:
+        await websocket.send_text(json.dumps({
+            "type": "initial_state",
+            "agents": initial_state
+        }, default=str))
+
     try:
         while True:
-            # Prune if no message/heartbeat for 60s
+            # 2. Prune if no message/heartbeat for 60s
             data = await asyncio.wait_for(websocket.receive_text(), timeout=60.0)
             try:
                 msg = json.loads(data)
                 if msg.get("type") == "pose_update":
+                    # Broadcast the pose update to all clients in the scene
+                    # The broadcast method will also update the persistent state
                     broadcast_msg = {**msg, "type": "agent_update"}
                     await sync_manager.broadcast(scene_id, broadcast_msg)
             except Exception as e:
                 logger.error(f"Sync message error: {e}")
     except WebSocketDisconnect:
+        sync_manager.disconnect(scene_id, websocket)
+    except asyncio.TimeoutError:
+        logger.warning(f"WebSocket timeout for scene {scene_id}")
         sync_manager.disconnect(scene_id, websocket)
 
 

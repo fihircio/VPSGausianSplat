@@ -1,5 +1,4 @@
-import os
-from pathlib import Path
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,16 +6,37 @@ from fastapi.responses import RedirectResponse
 from backend.api.routes_scene import router as scene_router
 from backend.api.routes_vps import router as vps_router
 from backend.utils.config import get_settings
-from backend.utils.db import init_db
+from backend.utils.db import init_db, SessionLocal
 from backend.utils.storage import get_storage
+from backend.services.sync_service import sync_manager
+
+async def persist_agent_states_loop():
+    """Background task to periodically save agent poses to DB."""
+    while True:
+        try:
+            await asyncio.sleep(5)  # Persist every 5 seconds
+            with SessionLocal() as db:
+                sync_manager.persist_agent_states(db)
+        except Exception as e:
+            import logging
+            logging.getLogger("backend.api.main").error(f"Persistence loop error: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Ensure DB and Storage are ready
     settings = get_settings()
     init_db()
-    # Ensure absolute path is used for mounting
+    
+    # Start background task for agent sync persistence
+    persistence_task = asyncio.create_task(persist_agent_states_loop())
+    
     yield
+    # Cleanup
+    persistence_task.cancel()
+    try:
+        await persistence_task
+    except asyncio.CancelledError:
+        pass
 
 # 1. Initialize Settings
 settings = get_settings()
