@@ -1,7 +1,67 @@
 import axios from 'axios';
 import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport, EvaluationResponse, SceneFramesResponse, Anchor, AnchorCreate } from '../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const stripTrailingSlash = (value: string) => value.replace(/\/+$/, '');
+const stripLeadingSlash = (value: string) => value.replace(/^\/+/, '');
+const isAbsoluteHttpUrl = (value: string) => /^https?:\/\//i.test(value);
+const isAbsoluteWebSocketUrl = (value: string) => /^wss?:\/\//i.test(value);
+
+function normalizeBaseUrl(value: string | undefined): string {
+  return stripTrailingSlash(value?.trim() ?? '');
+}
+
+function joinUrl(baseUrl: string, path: string): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  if (!baseUrl) return normalizedPath;
+  return `${baseUrl}${normalizedPath}`;
+}
+
+export const API_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
+export const WS_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_WS_BASE_URL);
+
+export function getApiBaseUrl(): string {
+  return API_BASE_URL;
+}
+
+export function getWebSocketBaseUrl(): string {
+  if (WS_BASE_URL) return WS_BASE_URL;
+
+  const apiBaseUrl = getApiBaseUrl();
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const resolvedHttpBaseUrl = apiBaseUrl
+    ? isAbsoluteHttpUrl(apiBaseUrl) || origin
+      ? new URL(apiBaseUrl, origin || undefined).toString()
+      : ''
+    : origin;
+
+  return stripTrailingSlash(resolvedHttpBaseUrl.replace(/^http/i, 'ws'));
+}
+
+export function toApiUrl(path: string): string {
+  if (isAbsoluteHttpUrl(path)) return path;
+  return joinUrl(getApiBaseUrl(), path);
+}
+
+export function toApiWebSocketUrl(path: string): string {
+  if (isAbsoluteWebSocketUrl(path)) return path;
+  return joinUrl(getWebSocketBaseUrl(), path);
+}
+
+export function toApiStorageUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (isAbsoluteHttpUrl(path)) return path;
+  if (path.startsWith('/storage/')) return toApiUrl(path);
+
+  const storageMarker = '/backend/storage/';
+  const markerIndex = path.indexOf(storageMarker);
+  if (markerIndex >= 0) {
+    const relativePath = path.slice(markerIndex + storageMarker.length).replace(/^\/+/, '');
+    return toApiUrl(`/storage/${relativePath}`);
+  }
+
+  if (path.startsWith('/')) return toApiUrl(path);
+  return toApiUrl(`/storage/${stripLeadingSlash(path)}`);
+}
 
 const client = axios.create({
   baseURL: API_BASE_URL,

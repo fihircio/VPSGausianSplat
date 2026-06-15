@@ -20,8 +20,57 @@ from backend.utils.config import get_settings
 from backend.utils.db import get_db
 from backend.utils.storage import ensure_scene_dirs, save_upload, purge_scene_data
 from backend.workers.tasks import process_scene_task
+from backend.api.auth import validate_api_key
 
 router = APIRouter(prefix="/scene", tags=["scene"])
+
+
+def _to_storage_web_path(path: str | None) -> str | None:
+    """Convert local storage paths to FastAPI's /storage URL path.
+
+    Older demo scenes were seeded with absolute filesystem paths. Newer scenes
+    store relative paths. API consumers should not need to handle both forms.
+    """
+    if not path:
+        return path
+    if path.startswith(("http://", "https://", "/storage/")):
+        return path
+
+    settings = get_settings()
+    storage_base = settings.storage_root.resolve()
+
+    if path.startswith("/"):
+        try:
+            rel = Path(path).resolve().relative_to(storage_base)
+            return f"/storage/{rel.as_posix()}"
+        except ValueError:
+            storage_marker = "/backend/storage/"
+            if storage_marker in path:
+                rel = path.split(storage_marker, 1)[1]
+                return f"/storage/{rel.lstrip('/')}"
+            return path
+
+    return f"/storage/{path.lstrip('/')}"
+
+
+def _scene_response(scene: Scene, frame_count: int) -> SceneResponse:
+    return SceneResponse(
+        id=scene.id,
+        name=scene.name,
+        status=scene.status,
+        input_type=scene.input_type,
+        input_path=_to_storage_web_path(scene.input_path) or "",
+        frames_dir=_to_storage_web_path(scene.frames_dir) or "",
+        sparse_dir=_to_storage_web_path(scene.sparse_dir),
+        splat_path=_to_storage_web_path(scene.splat_path),
+        faiss_index_path=_to_storage_web_path(scene.faiss_index_path),
+        progress_percent=scene.progress_percent,
+        current_task_label=scene.current_task_label,
+        error_message=scene.error_message,
+        frame_count=frame_count,
+        created_at=scene.created_at,
+        updated_at=scene.updated_at,
+    )
 
 
 @router.get("/", response_model=list[SceneResponse])
@@ -30,43 +79,57 @@ def list_scenes(db: Session = Depends(get_db)) -> list[SceneResponse]:
     results = []
     for scene in scenes:
         frame_count = db.scalar(select(func.count(Frame.id)).where(Frame.scene_id == scene.id)) or 0
-        results.append(
-            SceneResponse(
-                id=scene.id,
-                name=scene.name,
-                status=scene.status,
-                input_type=scene.input_type,
-                input_path=scene.input_path,
-                frames_dir=scene.frames_dir,
-                sparse_dir=scene.sparse_dir,
-                splat_path=scene.splat_path,
-                faiss_index_path=scene.faiss_index_path,
-                progress_percent=scene.progress_percent,
-                current_task_label=scene.current_task_label,
-                error_message=scene.error_message,
-                frame_count=frame_count,
-                created_at=scene.created_at,
-                updated_at=scene.updated_at,
-            )
-        )
+        results.append(_scene_response(scene, frame_count))
     return results
 
 
-@router.post("/upload", response_model=SceneResponse)
+@router.post("/upload", response_model=SceneResponse, dependencies=[Depends(validate_api_key)])
 def upload_scene(
     file: UploadFile = File(...),
     name: str | None = Form(None),
     db: Session = Depends(get_db),
 ) -> SceneResponse:
+    settings = get_settings()
+
+    # Validate file extension
+    suffix = Path(file.filename or "").suffix.lower()
+    valid_suffixes = {
+        ".mp4", ".mov", ".avi", ".mkv", ".webm",  # videos
+        ".jpg", ".jpeg", ".png", ".bmp"           # images
+    }
+    if suffix not in valid_suffixes:
+        raise HTTPException(
+            status_code=415,
+            detail=f"Unsupported file extension {suffix}. Supported formats: {', '.join(sorted(valid_suffixes))}",
+        )
+
+    # Validate content type
+    content_type = file.content_type or ""
+    is_video = content_type.startswith("video") or suffix in {
+        ".mp4", ".mov", ".avi", ".mkv", ".webm"
+    }
+    is_image = content_type.startswith("image") or suffix in {
+        ".jpg", ".jpeg", ".png", ".bmp"
+    }
+    if not (is_video or is_image):
+        raise HTTPException(
+            status_code=415,
+            detail="Unsupported media type. File must be a valid video or image.",
+        )
+
+    # Validate file size
+    if file.size is not None:
+        max_bytes = settings.max_upload_size_mb * 1024 * 1024
+        if file.size > max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File is too large ({file.size / 1024 / 1024:.1f} MB). Maximum size allowed is {settings.max_upload_size_mb} MB.",
+            )
+
     scene_id = str(uuid4())
     dirs = ensure_scene_dirs(scene_id)
     input_path = save_upload(file, dirs["raw_dir"])
 
-    # suffix and is_video logic...
-    suffix = Path(file.filename or "").suffix.lower()
-    is_video = (file.content_type or "").startswith("video") or suffix in {
-        ".mp4", ".mov", ".avi", ".mkv", ".webm"
-    }
     input_type = "video" if is_video else "image"
 
     # Store relative paths in DB
@@ -104,7 +167,7 @@ def upload_scene(
     )
 
 
-@router.post("/{scene_id}/process", response_model=SceneProcessResponse)
+@router.post("/{scene_id}/process", response_model=SceneProcessResponse, dependencies=[Depends(validate_api_key)])
 def process_scene(scene_id: str, force_rebuild: bool = False, db: Session = Depends(get_db)) -> SceneProcessResponse:
     scene = db.get(Scene, scene_id)
     if not scene:
@@ -123,28 +186,11 @@ def get_scene(scene_id: str, db: Session = Depends(get_db)) -> SceneResponse:
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
     frame_count = db.scalar(select(func.count(Frame.id)).where(Frame.scene_id == scene_id)) or 0
-    return SceneResponse(
-        id=scene.id,
-        name=scene.name,
-        status=scene.status,
-        input_type=scene.input_type,
-        input_path=scene.input_path,
-        frames_dir=scene.frames_dir,
-        sparse_dir=scene.sparse_dir,
-        splat_path=scene.splat_path,
-        faiss_index_path=scene.faiss_index_path,
-        progress_percent=scene.progress_percent,
-        current_task_label=scene.current_task_label,
-        error_message=scene.error_message,
-        frame_count=frame_count,
-        created_at=scene.created_at,
-        updated_at=scene.updated_at,
-    )
+    return _scene_response(scene, frame_count)
 
 
 @router.get("/{scene_id}/frames", response_model=SceneFramesResponse)
 def get_scene_frames(scene_id: str, db: Session = Depends(get_db)) -> SceneFramesResponse:
-    settings = get_settings()
     # Limit to 300 frames to ensure viewer performance
     frames = db.scalars(
         select(Frame)
@@ -153,27 +199,13 @@ def get_scene_frames(scene_id: str, db: Session = Depends(get_db)) -> SceneFrame
         .limit(300)
     ).all()
 
-    # Helper to convert absolute path to web-accessible URL
-    storage_base = settings.storage_root.resolve()
-
-    def to_web_path(p: str) -> str:
-        if not p: return p
-        # If it's already an absolute path (legacy), try to relativize
-        if p.startswith("/"):
-            try:
-                rel = Path(p).resolve().relative_to(storage_base)
-                return f"/storage/{rel}"
-            except ValueError:
-                return p
-        return f"/storage/{p}"
-
     return SceneFramesResponse(
         scene_id=scene_id,
         frames=[
             FrameResponse(
                 id=f.id,
                 frame_index=f.frame_index,
-                image_path=to_web_path(f.image_path),
+                image_path=_to_storage_web_path(f.image_path) or "",
                 intrinsics_json=f.intrinsics_json,
                 pose_json=f.pose_json,
             )
@@ -182,8 +214,11 @@ def get_scene_frames(scene_id: str, db: Session = Depends(get_db)) -> SceneFrame
     )
 
 
-@router.delete("/{scene_id}/cleanup")
+@router.delete("/{scene_id}/cleanup", dependencies=[Depends(validate_api_key)])
 def cleanup_scene_storage(scene_id: str, db: Session = Depends(get_db)):
+    settings = get_settings()
+    if not settings.allow_destructive_endpoints:
+        raise HTTPException(status_code=403, detail="Destructive endpoints are disabled.")
     scene = db.get(Scene, scene_id)
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
@@ -284,10 +319,13 @@ def create_anchor(
     )
 
 
-@router.delete("/{scene_id}/anchors/{anchor_id}", status_code=204)
+@router.delete("/{scene_id}/anchors/{anchor_id}", status_code=204, dependencies=[Depends(validate_api_key)])
 def delete_anchor(
     scene_id: str, anchor_id: str, db: Session = Depends(get_db)
 ) -> None:
+    settings = get_settings()
+    if not settings.allow_destructive_endpoints:
+        raise HTTPException(status_code=403, detail="Destructive endpoints are disabled.")
     """Remove an anchor by ID."""
     anchor = db.get(Anchor, anchor_id)
     if not anchor or anchor.scene_id != scene_id:

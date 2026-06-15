@@ -1,0 +1,848 @@
+{
+  "aoi_id": "bukit_bintang_001",
+  "camera_policy": "pedestrian_perimeter",
+  "frame_count": 24,
+  "frames": [
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000000",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292914.6254769186,
+        6236007.3632131005,
+        347842.69730256917
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600462675094604,
+        "lat": 3.1473108521568647,
+        "lon": 101.71321079599987
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000001",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292932.3735808355,
+        6236003.6833315035,
+        347842.69730256917
+      ],
+      "position_enu": [
+        -36.25116391093825,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60033390391618,
+        "lat": 3.1473108522208983,
+        "lon": 101.7133738639999
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000002",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292950.1216847526,
+        6236000.003449906,
+        347842.69730256917
+      ],
+      "position_enu": [
+        -18.12558195556887,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60025664046407,
+        "lat": 3.147310852259318,
+        "lon": 101.71353693199995
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000003",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292967.8697886695,
+        6235996.323568308,
+        347842.69730256917
+      ],
+      "position_enu": [
+        -1.9947776763729053e-10,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60023088566959,
+        "lat": 3.147310852272125,
+        "lon": 101.7137
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000004",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292985.6178925866,
+        6235992.64368671,
+        347842.69730256917
+      ],
+      "position_enu": [
+        18.1255819551699,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600256639532745,
+        "lat": 3.1473108522593187,
+        "lon": 101.71386306800007
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000005",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293003.3659965035,
+        6235988.963805112,
+        347842.69730256917
+      ],
+      "position_enu": [
+        36.2511639105393,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60033390298486,
+        "lat": 3.147310852220899,
+        "lon": 101.71402613600011
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000006",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293021.1141004204,
+        6235985.283923515,
+        347842.69730256917
+      ],
+      "position_enu": [
+        54.37674586590868,
+        -54.089191078533254,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600462675094604,
+        "lat": 3.1473108521568647,
+        "lon": 101.71418920400015
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 0.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000007",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293020.9130998785,
+        6235984.314495992,
+        347860.6998343118
+      ],
+      "position_enu": [
+        54.37674586590868,
+        -36.05945619180414,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60033440589905,
+        "lat": 3.147473901440932,
+        "lon": 101.71418920407619
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 0.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000008",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293020.7120993368,
+        6235983.345068468,
+        347878.7023660544
+      ],
+      "position_enu": [
+        54.37674586590868,
+        -18.02972130507505,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60025744419545,
+        "lat": 3.147636950724493,
+        "lon": 101.71418920415225
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 0.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000009",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293020.5110987949,
+        6235982.375640945,
+        347896.704897797
+      ],
+      "position_enu": [
+        54.37674586590868,
+        1.3581654066285864e-05,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60023178998381,
+        "lat": 3.147800000007546,
+        "lon": 101.71418920422829
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 0.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000010",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293020.310098253,
+        6235981.40621342,
+        347914.70742953965
+      ],
+      "position_enu": [
+        54.37674586590868,
+        18.029748468383183,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60025744326413,
+        "lat": 3.1479630492900883,
+        "lon": 101.71418920430435
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 0.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000011",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293020.109097711,
+        6235980.436785897,
+        347932.70996128226
+      ],
+      "position_enu": [
+        54.37674586590868,
+        36.05948335511227,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60033440683037,
+        "lat": 3.1481260985721167,
+        "lon": 101.71418920438039
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 0.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000012",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293019.9080971691,
+        6235979.467358374,
+        347950.7124930249
+      ],
+      "position_enu": [
+        54.37674586590868,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60046267602593,
+        "lat": 3.148289147853628,
+        "lon": 101.71418920445645
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": -90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000013",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1293002.1599932523,
+        6235983.147239971,
+        347950.7124930249
+      ],
+      "position_enu": [
+        36.25116391053931,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60033390391618,
+        "lat": 3.1482891479176818,
+        "lon": 101.7140261363043
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": -90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000014",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292984.4118893354,
+        6235986.827121569,
+        347950.7124930249
+      ],
+      "position_enu": [
+        18.125581955169892,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60025664046407,
+        "lat": 3.1482891479561137,
+        "lon": 101.71386306815215
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": -90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000015",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292966.6637854183,
+        6235990.507003167,
+        347950.7124930249
+      ],
+      "position_enu": [
+        -1.9947776763729053e-10,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60023088660091,
+        "lat": 3.148289147968925,
+        "lon": 101.7137
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": -90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000016",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292948.9156815014,
+        6235994.186884765,
+        347950.7124930249
+      ],
+      "position_enu": [
+        -18.125581955568855,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60025664046407,
+        "lat": 3.1482891479561137,
+        "lon": 101.71353693184787
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": -90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000017",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292931.1675775843,
+        6235997.866766362,
+        347950.7124930249
+      ],
+      "position_enu": [
+        -36.25116391093827,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.6003339048475,
+        "lat": 3.1482891479176813,
+        "lon": 101.71337386369571
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": -90.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000018",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292913.4194736674,
+        6236001.546647959,
+        347950.7124930249
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        54.08921824184138,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600462675094604,
+        "lat": 3.1482891478536286,
+        "lon": 101.71321079554357
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 180.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000019",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292913.6204742093,
+        6236002.516075483,
+        347932.70996128226
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        36.05948335511229,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60033440589905,
+        "lat": 3.148126098572117,
+        "lon": 101.71321079561963
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 180.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000020",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292913.8214747512,
+        6236003.485503006,
+        347914.70742953965
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        18.029748468383147,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600257442332804,
+        "lat": 3.1479630492900883,
+        "lon": 101.71321079569567
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 180.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000021",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292914.0224752931,
+        6236004.45493053,
+        347896.704897797
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        1.3581654059180437e-05,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600231789052486,
+        "lat": 3.147800000007546,
+        "lon": 101.71321079577172
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 180.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000022",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292914.223475835,
+        6236005.424358053,
+        347878.7023660544
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        -18.02972130507503,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.60025744326413,
+        "lat": 3.1476369507244932,
+        "lon": 101.71321079584777
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 180.0
+      },
+      "source_tile_ids": []
+    },
+    {
+      "camera_model": "pinhole",
+      "extrinsics_note": "ENU camera pose scaffold; renderer-specific matrices are not generated yet.",
+      "frame_id": "frame_000023",
+      "intrinsics": {
+        "cx": 640.0,
+        "cy": 360.0,
+        "fov_degrees": 70.0,
+        "fx": 914.0147243149534,
+        "fy": 914.0147243149534,
+        "height": 720,
+        "width": 1280
+      },
+      "position_ecef": [
+        -1292914.4244763767,
+        6236006.393785577,
+        347860.6998343118
+      ],
+      "position_enu": [
+        -54.37674586630764,
+        -36.05945619180417,
+        1.6
+      ],
+      "position_wgs84": {
+        "h": 46.600334404967725,
+        "lat": 3.1474739014409323,
+        "lon": 101.71321079592383
+      },
+      "rotation_ypr_degrees_enu": {
+        "pitch": -5.0,
+        "roll": 0.0,
+        "yaw": 180.0
+      },
+      "source_tile_ids": []
+    }
+  ],
+  "schema_version": "google3d.trajectory.v1"
+}

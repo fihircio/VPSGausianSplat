@@ -1,0 +1,48 @@
+{
+  "schema_version": "google3d.feature_benchmark.v1",
+  "aoi_id": "bukit_bintang_001",
+  "aoi_name": "Bukit Bintang Facade Corridor",
+  "timestamp": "2026-06-15T10:27:57Z",
+  "image_width": 1280,
+  "image_height": 720,
+  "benchmarks": [
+    {
+      "mode": "ORB",
+      "frames_processed": 24,
+      "keypoints": {
+        "mean": 1152.9166666666667,
+        "median": 949.5,
+        "min": 22,
+        "max": 2409
+      },
+      "performance": {
+        "mean_extraction_time_ms": 21.03732637624489,
+        "fps": 47.53455748679112
+      },
+      "matching": {
+        "mean_matches": 253.91304347826087,
+        "median_inliers": 21.0,
+        "mean_inlier_ratio": 0.18583363450252852
+      }
+    },
+    {
+      "mode": "SIFT",
+      "frames_processed": 24,
+      "keypoints": {
+        "mean": 576.8333333333334,
+        "median": 386.5,
+        "min": 5,
+        "max": 1901
+      },
+      "performance": {
+        "mean_extraction_time_ms": 89.21420483238762,
+        "fps": 11.208977335826322
+      },
+      "matching": {
+        "mean_matches": 125.0,
+        "median_inliers": 10.0,
+        "mean_inlier_ratio": 0.3371060457437149
+      }
+    }
+  ]
+}

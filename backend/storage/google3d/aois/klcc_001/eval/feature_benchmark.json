@@ -1,0 +1,48 @@
+{
+  "schema_version": "google3d.feature_benchmark.v1",
+  "aoi_id": "klcc_001",
+  "aoi_name": "KLCC Park and Petronas Towers",
+  "timestamp": "2026-06-15T11:14:14Z",
+  "image_width": 1280,
+  "image_height": 720,
+  "benchmarks": [
+    {
+      "mode": "ORB",
+      "frames_processed": 500,
+      "keypoints": {
+        "mean": 582.544,
+        "median": 559.0,
+        "min": 0,
+        "max": 1505
+      },
+      "performance": {
+        "mean_extraction_time_ms": 22.608221100410447,
+        "fps": 44.231697644793705
+      },
+      "matching": {
+        "mean_matches": 313.98597194388776,
+        "median_inliers": 140.0,
+        "mean_inlier_ratio": 0.5250331259874313
+      }
+    },
+    {
+      "mode": "SIFT",
+      "frames_processed": 500,
+      "keypoints": {
+        "mean": 216.712,
+        "median": 181.5,
+        "min": 0,
+        "max": 608
+      },
+      "performance": {
+        "mean_extraction_time_ms": 143.71456021783524,
+        "fps": 6.958237206336301
+      },
+      "matching": {
+        "mean_matches": 118.45691382765531,
+        "median_inliers": 69.0,
+        "mean_inlier_ratio": 0.6025102822360864
+      }
+    }
+  ]
+}

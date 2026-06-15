@@ -1,0 +1,17 @@
+{
+  "aoi_id": "merdeka_square_001",
+  "local_frame": "ENU",
+  "paths": {
+    "aoi": "backend/storage/google3d/aois/merdeka_square_001/aoi.json",
+    "eval_dir": "backend/storage/google3d/aois/merdeka_square_001/eval",
+    "features_dir": "backend/storage/google3d/aois/merdeka_square_001/features",
+    "meshes_dir": "backend/storage/google3d/aois/merdeka_square_001/meshes",
+    "permission": "backend/storage/google3d/permissions/merdeka_square_001_permission.json",
+    "render_runs_dir": "backend/storage/google3d/aois/merdeka_square_001/render_runs",
+    "source_tiles": "backend/storage/google3d/aois/merdeka_square_001/source_tiles.json",
+    "tiles_dir": "backend/storage/google3d/aois/merdeka_square_001/tiles",
+    "trajectory": "backend/storage/google3d/aois/merdeka_square_001/render_runs/scaffold/trajectory.json"
+  },
+  "permission_research_only": true,
+  "schema_version": "google3d.aoi_manifest.v1"
+}

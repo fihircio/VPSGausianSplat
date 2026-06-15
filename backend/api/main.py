@@ -74,7 +74,11 @@ def health() -> dict:
 
 @app.get("/debug-path")
 def debug_path():
+    from fastapi import HTTPException
+    import os
     settings = get_settings()
+    if not settings.allow_debug_endpoints:
+        raise HTTPException(status_code=403, detail="Debug endpoints are disabled.")
     root = settings.storage_root.resolve()
     # Check for the specific problematic file
     target_ply = root / "splats" / "bcaa4187-b6f0-4d4c-8996-b234ba0af8e1" / "sparse_points_fallback.ply"

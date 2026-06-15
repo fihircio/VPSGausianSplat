@@ -13,6 +13,8 @@ backend/storage/features/**
 backend/storage/queries/**
 backend/storage/debug/**
 backend/scratch/**
+backend/storage/google3d/**/rgb/**
+backend/storage/google3d/**/depth/**
 
 !backend/storage/raw/.gitkeep
 !backend/storage/frames/.gitkeep

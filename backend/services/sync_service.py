@@ -39,7 +39,16 @@ class ConnectionManager:
 
     def persist_agent_states(self, db: Session):
         """Flush in-memory poses to the database."""
-        for scene_id, agents in self.agent_states.items():
+        from backend.models.scene import Scene
+        
+        for scene_id, agents in list(self.agent_states.items()):
+            # Verify scene exists before persisting
+            scene_exists = db.scalar(select(Scene.id).where(Scene.id == scene_id))
+            if not scene_exists:
+                # If it's a mock scene from testing, we don't persist, 
+                # but we keep it in memory for the active websocket session.
+                continue
+
             for agent_id, state in agents.items():
                 try:
                     # Try to find existing session

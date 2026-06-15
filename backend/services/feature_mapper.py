@@ -64,8 +64,9 @@ class FeatureMapper:
 
         for frame in frames:
             image_name = Path(frame.image_path).name
-            colmap_image = images_by_name.get(image_name)
-            if not colmap_image:
+            current_colmap_image = images_by_name.get(image_name)
+            
+            if not current_colmap_image:
                 print(f"Skipping frame {image_name}: not registered in COLMAP")
                 continue
 
@@ -74,7 +75,7 @@ class FeatureMapper:
             
             frame_mapping = FeatureMapper._build_frame_mapping(
                 image_path=local_image_path,
-                colmap_image=colmap_image,
+                colmap_image=current_colmap_image,
                 points3d_by_id=points3d_by_id,
             )
             frame_out = local_frames_sub_dir / f"frame_{frame.frame_index:06d}.npz"

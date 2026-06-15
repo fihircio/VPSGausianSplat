@@ -1,0 +1,47 @@
+{
+  "aoi_id": "klcc_001",
+  "local_frame": "ENU",
+  "market": "Kuala Lumpur",
+  "metadata": {
+    "description": "Dense urban canyon near KLCC Petronas Twin Towers for occlusion and reflection testing."
+  },
+  "name": "KLCC Park and Petronas Towers",
+  "origin_ecef": [
+    -1292726.9253037518,
+    6235983.977615418,
+    349012.0440122055
+  ],
+  "origin_wgs84": {
+    "h": 50.0,
+    "lat": 3.1579,
+    "lon": 101.7116
+  },
+  "polygon_wgs84": [
+    {
+      "h": 50.0,
+      "lat": 3.1584,
+      "lon": 101.7111
+    },
+    {
+      "h": 50.0,
+      "lat": 3.1584,
+      "lon": 101.7121
+    },
+    {
+      "h": 50.0,
+      "lat": 3.1574,
+      "lon": 101.7121
+    },
+    {
+      "h": 50.0,
+      "lat": 3.1574,
+      "lon": 101.7111
+    }
+  ],
+  "priority": 1,
+  "tags": [
+    "dense_urban",
+    "high_rise"
+  ],
+  "vertical_datum": "WGS84"
+}

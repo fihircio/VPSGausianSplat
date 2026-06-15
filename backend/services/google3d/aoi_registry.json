@@ -1,0 +1,105 @@
+{
+  "schema_version": "google3d.aoi_registry.v1",
+  "permission": {
+    "provider": "google",
+    "source": "photorealistic_3d_tiles",
+    "allowed_uses": [
+      "internal_research_only",
+      "benchmark",
+      "evaluate"
+    ],
+    "allowed_storage": [
+      "raw_tiles",
+      "decoded_mesh",
+      "rendered_rgb",
+      "depth",
+      "poses",
+      "features"
+    ],
+    "derived_model_commercialization": false,
+    "retention_days": 90,
+    "document_uri": "docs/google_3d_training_pipeline.md"
+  },
+  "camera_path": {
+    "policy": "pedestrian_perimeter",
+    "frame_count": 10000,
+    "camera_height_m": 1.6,
+    "fov_degrees": 70.0,
+    "width": 1280,
+    "height": 720,
+    "pitch_degrees": -5.0,
+    "seed": 13,
+    "jitter_m": 0.0
+  },
+  "aois": [
+    {
+      "aoi_id": "klcc_001",
+      "name": "KLCC Park and Petronas Towers",
+      "market": "Kuala Lumpur",
+      "priority": 1,
+      "origin_wgs84": {
+        "lat": 3.1579,
+        "lon": 101.7116,
+        "h": 50.0
+      },
+      "polygon_wgs84": [
+        { "lat": 3.1584, "lon": 101.7111, "h": 50.0 },
+        { "lat": 3.1584, "lon": 101.7121, "h": 50.0 },
+        { "lat": 3.1574, "lon": 101.7121, "h": 50.0 },
+        { "lat": 3.1574, "lon": 101.7111, "h": 50.0 }
+      ],
+      "tags": ["dense_urban", "high_rise"],
+      "vertical_datum": "WGS84",
+      "local_frame": "ENU",
+      "metadata": {
+        "description": "Dense urban canyon near KLCC Petronas Twin Towers for occlusion and reflection testing."
+      }
+    },
+    {
+      "aoi_id": "bukit_bintang_001",
+      "name": "Bukit Bintang Facade Corridor",
+      "market": "Kuala Lumpur",
+      "priority": 2,
+      "origin_wgs84": {
+        "lat": 3.1478,
+        "lon": 101.7137,
+        "h": 45.0
+      },
+      "polygon_wgs84": [
+        { "lat": 3.1483, "lon": 101.7132, "h": 45.0 },
+        { "lat": 3.1483, "lon": 101.7142, "h": 45.0 },
+        { "lat": 3.1473, "lon": 101.7142, "h": 45.0 },
+        { "lat": 3.1473, "lon": 101.7132, "h": 45.0 }
+      ],
+      "tags": ["storefront", "retail_corridor"],
+      "vertical_datum": "WGS84",
+      "local_frame": "ENU",
+      "metadata": {
+        "description": "Retail street/storefront facades for parallax sweep and sidewalk navigation testing."
+      }
+    },
+    {
+      "aoi_id": "merdeka_square_001",
+      "name": "Merdeka Square Open Plaza",
+      "market": "Kuala Lumpur",
+      "priority": 3,
+      "origin_wgs84": {
+        "lat": 3.1493,
+        "lon": 101.6938,
+        "h": 40.0
+      },
+      "polygon_wgs84": [
+        { "lat": 3.1498, "lon": 101.6933, "h": 40.0 },
+        { "lat": 3.1498, "lon": 101.6943, "h": 40.0 },
+        { "lat": 3.1488, "lon": 101.6943, "h": 40.0 },
+        { "lat": 3.1488, "lon": 101.6933, "h": 40.0 }
+      ],
+      "tags": ["open_area", "low_texture"],
+      "vertical_datum": "WGS84",
+      "local_frame": "ENU",
+      "metadata": {
+        "description": "Low-texture open square for testing baseline SIFT/ORB feature matching in sparse surroundings."
+      }
+    }
+  ]
+}

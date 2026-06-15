@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 import { TileManifest, TileNode } from '../types';
-import { api } from './api';
+import { api, toApiStorageUrl } from './api';
 
 export class TileManager {
   private sceneId: string;
@@ -98,7 +98,11 @@ export class TileManager {
 
   private async loadTile(nodeId: string) {
     this.loadingTiles.add(nodeId);
-    const url = `http://localhost:8000/storage/splats/${this.sceneId}/tiles/tile_${nodeId}.ply`;
+    const url = toApiStorageUrl(`/storage/splats/${this.sceneId}/tiles/tile_${nodeId}.ply`);
+    if (!url) {
+      this.loadingTiles.delete(nodeId);
+      throw new Error(`Tile ${nodeId} is missing a storage URL`);
+    }
 
     return new Promise<void>((resolve, reject) => {
       this.loader.load(url, (geometry) => {

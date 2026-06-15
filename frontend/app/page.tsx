@@ -26,8 +26,8 @@ export default function Home() {
             Clinical Precision <br/> for <span className="text-indigo-600">Spatial Health</span>
           </h1>
           <p className="mt-6 text-xl leading-8 text-gray-600 font-medium">
-            Convert hospital wings into sub-decimeter VPS maps. 
-            Achieve <span className="bg-indigo-50 text-indigo-700 px-2 rounded-lg font-black tracking-tight">4.1cm Accuracy</span> in low-parallax indoor environments.
+            Convert hospital wings into high-precision VPS maps. 
+            Achieve <span className="bg-indigo-50 text-indigo-700 px-2 rounded-lg font-black tracking-tight">sub-decimeter accuracy</span> depending on environment and benchmark configurations.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
             <Link

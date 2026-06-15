@@ -1,0 +1,47 @@
+{
+  "aoi_id": "bukit_bintang_001",
+  "local_frame": "ENU",
+  "market": "Kuala Lumpur",
+  "metadata": {
+    "description": "Retail street/storefront facades for parallax sweep and sidewalk navigation testing."
+  },
+  "name": "Bukit Bintang Facade Corridor",
+  "origin_ecef": [
+    -1292966.9424430127,
+    6235991.850971391,
+    347896.61702529085
+  ],
+  "origin_wgs84": {
+    "h": 45.0,
+    "lat": 3.1478,
+    "lon": 101.7137
+  },
+  "polygon_wgs84": [
+    {
+      "h": 45.0,
+      "lat": 3.1483,
+      "lon": 101.7132
+    },
+    {
+      "h": 45.0,
+      "lat": 3.1483,
+      "lon": 101.7142
+    },
+    {
+      "h": 45.0,
+      "lat": 3.1473,
+      "lon": 101.7142
+    },
+    {
+      "h": 45.0,
+      "lat": 3.1473,
+      "lon": 101.7132
+    }
+  ],
+  "priority": 2,
+  "tags": [
+    "storefront",
+    "retail_corridor"
+  ],
+  "vertical_datum": "WGS84"
+}

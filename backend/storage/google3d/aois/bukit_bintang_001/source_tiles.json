@@ -1,0 +1,9 @@
+{
+  "aoi_id": "bukit_bintang_001",
+  "notes": "Offline scaffold only. Populate after authorized Google 3D tile traversal.",
+  "provider": "google",
+  "schema_version": "google3d.source_tiles.v1",
+  "source": "photorealistic_3d_tiles",
+  "status": "not_ingested",
+  "tiles": []
+}

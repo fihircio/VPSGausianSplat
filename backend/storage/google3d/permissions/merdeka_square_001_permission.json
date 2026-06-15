@@ -1,0 +1,20 @@
+{
+  "allowed_storage": [
+    "raw_tiles",
+    "decoded_mesh",
+    "rendered_rgb",
+    "depth",
+    "poses",
+    "features"
+  ],
+  "allowed_uses": [
+    "internal_research_only",
+    "benchmark",
+    "evaluate"
+  ],
+  "derived_model_commercialization": false,
+  "document_uri": "docs/google_3d_training_pipeline.md",
+  "provider": "google",
+  "retention_days": 90,
+  "source": "photorealistic_3d_tiles"
+}

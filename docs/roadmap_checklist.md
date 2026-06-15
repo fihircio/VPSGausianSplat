@@ -1,19 +1,46 @@
-# Roadmap Checklist: Phase 4 (Multi-Agent Spatial Sync)
+# Roadmap Checklist: Phase 5 (Commercialization And Google 3D Data)
 
-This checklist tracks the technical milestones for the "Scaling VPS Clinical Dashboard" objective.
+This checklist tracks the 90-day commercialization objective: turn the current VPS + Gaussian Splatting MVP into a pilot-ready commercial product, while using Google 3D as a synthetic training and evaluation source.
 
-## 🟢 Module 1: Spatial Engine (Architect)
-- `[x]` Debug pipeline crash (85% Feature Mapping).
-- `[x]` Implement Area Anchor persistence (Backend API done).
-- `[x]` Implement Hybrid Localization (ORB + SIFT fallback for confidence boost).
-- `[x]` Spatial Coordinate Calibration utility (`backend/scripts/calibrate_scene.py`).
+## Module 1: Commercial Pilot Package
+- `[x]` Create customer-facing one-page pilot offer.
+- `[x]` Create pilot proposal template.
+- `[x]` Create pilot success metric template.
+- `[x]` Create security/privacy FAQ.
+- `[ ]` Record 2-minute demo video.
+- `[x]` Create 3-package pricing sheet: Pilot, Venue, Network.
 
-## 🔵 Module 2: Interaction Orchestrator (Sync)
-- `[x]` Create `AgentSession` DB model.
-- `[x]` Implement WebSocket broadcaster `/ws/vps/agents`.
-- `[x]` Latency benchmarking for sub-100ms pose updates (Verified with test scripts).
+## Module 2: Google 3D Synthetic Data Engine
+- `[x]` Document permission metadata record.
+- `[x]` Select 3 AOIs: dense urban, storefront, low-texture/open.
+- `[x]` Implement AOI tile/source manifest ingestion.
+- `[x]` Implement WGS84/ECEF/ENU coordinate utilities.
+- `[x]` Generate deterministic synthetic camera paths.
+- `[x]` Render 10,000 RGB+pose frames for first AOI (KLCC: 10,000 frames, 306 MB, procedural render).
+- `[x]` Run baseline feature benchmark across at least two feature modes (ORB vs SIFT on 500 sampled frames).
+- `[ ]` Complete synthetic-to-real transfer check.
 
-## 🔴 Module 3: Platform UX (Dashboard)
-- `[x]` Integrate `Framer Motion` for smooth 3D glyph transitions.
-- `[x]` Implement "Active Agent" list in the scene sidebar.
-- `[x]` Real-time pose projection in the Gaussian Splat viewer.
+## Module 3: Pilot-Ready Engineering
+- `[x]` Remove hardcoded localhost URLs from frontend, Navigatus, and Unity SDK.
+- `[x]` Add upload size/type validation.
+- `[x]` Gate destructive and debug endpoints.
+- `[x]` Add API key auth for localization and scene APIs.
+- `[x]` Add tenant/project ownership model.
+- `[ ]` Add Alembic migrations.
+- `[x]` Add benchmark JSON schema.
+- `[x]` Add backend tests for upload/process/localize/auth.
+- `[ ]` Add frontend smoke test for dashboard/viewer.
+
+## Module 4: SDK And Developer Experience
+- `[ ]` Add Unity SDK API key support.
+- `[x]` Add Unity quickstart.
+- `[ ]` Add sample scene or sample localization flow.
+- `[x]` Document coordinate conversion.
+- `[x]` Document localization confidence/error handling.
+
+## Module 5: Commercial Execution
+- `[ ]` Build target list of 50 accounts.
+- `[ ]` Complete 10 discovery calls.
+- `[ ]` Send 3 pilot proposals.
+- `[ ]` Close 1 paid pilot or LOI by day 30 target.
+- `[ ]` Close 2-3 paid pilots or one annual/expanded conversion by day 90 target.

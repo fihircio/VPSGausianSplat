@@ -1,0 +1,47 @@
+{
+  "aoi_id": "merdeka_square_001",
+  "local_frame": "ENU",
+  "market": "Kuala Lumpur",
+  "metadata": {
+    "description": "Low-texture open square for testing baseline SIFT/ORB feature matching in sparse surroundings."
+  },
+  "name": "Merdeka Square Open Plaza",
+  "origin_ecef": [
+    -1290798.1182040777,
+    6236426.738778443,
+    348061.9595725592
+  ],
+  "origin_wgs84": {
+    "h": 40.0,
+    "lat": 3.1493,
+    "lon": 101.6938
+  },
+  "polygon_wgs84": [
+    {
+      "h": 40.0,
+      "lat": 3.1498,
+      "lon": 101.6933
+    },
+    {
+      "h": 40.0,
+      "lat": 3.1498,
+      "lon": 101.6943
+    },
+    {
+      "h": 40.0,
+      "lat": 3.1488,
+      "lon": 101.6943
+    },
+    {
+      "h": 40.0,
+      "lat": 3.1488,
+      "lon": 101.6933
+    }
+  ],
+  "priority": 3,
+  "tags": [
+    "open_area",
+    "low_texture"
+  ],
+  "vertical_datum": "WGS84"
+}

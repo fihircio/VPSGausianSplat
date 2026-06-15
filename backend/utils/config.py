@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     azure_connection_string: str = ""
     azure_container: str = "vps-storage"
 
+    # Security & Gating Settings
+    api_key: str | None = None
+    allow_debug_endpoints: bool = True
+    allow_destructive_endpoints: bool = True
+    max_upload_size_mb: int = 500
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -12,13 +12,14 @@ from backend.services.sync_service import sync_manager
 from backend.utils.config import get_settings
 from backend.utils.db import get_db
 from backend.utils.storage import save_upload, get_storage
+from backend.api.auth import validate_api_key
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/vps", tags=["vps"])
 
 
-@router.post("/localize", response_model=LocalizeResponse)
+@router.post("/localize", response_model=LocalizeResponse, dependencies=[Depends(validate_api_key)])
 async def localize(
     scene_id: str = Form(...),
     query_image: UploadFile = File(...),
@@ -52,10 +53,13 @@ async def localize(
 
 
 @router.websocket("/ws/agents/{scene_id}")
-async def agent_sync_websocket(websocket: WebSocket, scene_id: str):
+async def agent_sync_websocket(websocket: WebSocket, scene_id: str, api_key: str | None = None):
     """
     WebSocket endpoint for real-time spatial sync.
     """
+    from backend.api.auth import validate_ws_api_key
+    await validate_ws_api_key(websocket, api_key)
+    
     await sync_manager.connect(scene_id, websocket)
     
     # 1. Send initial state to the new client
