@@ -245,6 +245,17 @@ Exit gate:
   - pretraining plus benchmark,
   - or production outdoor map initialization.
 
+**Baseline results (unrelated scenes — KLCC synthetic vs indoor corridor real):**
+| Metric | ORB | SIFT |
+|--------|-----|------|
+| Synth→Synth inlier ratio | 0.36 | 0.45 |
+| Real→Real inlier ratio | 0.19 | 0.19 |
+| Cross-domain inlier ratio | 0.11 | 0.15 |
+| Transfer gap | 0.17 | 0.17 |
+
+Script: `backend/scripts/synthetic_to_real_transfer.py` supports both DB and direct-path modes.
+The transfer gap of ~0.17 is expected for unrelated scenes. A definitive result requires a phone capture at one of the 3 AOI locations (KLCC, Bukit Bintang, Merdeka Square). The gap may shrink significantly when comparing the same physical location across domains.
+
 Exit gate:
 
 - Go/no-go recommendation for scaling to 25 AOIs.
