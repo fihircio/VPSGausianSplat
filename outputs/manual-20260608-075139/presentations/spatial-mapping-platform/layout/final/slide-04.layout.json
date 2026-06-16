@@ -1,0 +1,1311 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/ongz1t",
+    "id": "ongz1t",
+    "slide": 4,
+    "layoutId": "229c7005-7601-4b8b-aa96-560120e5ed9a",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "f1a58d09-be01-404e-b31a-b32e6356aef7",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Aptos",
+      "Aptos Display",
+      "Aptos Mono"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "229c7005-7601-4b8b-aa96-560120e5ed9a",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "f1a58d09-be01-404e-b31a-b32e6356aef7",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "f1a58d09-be01-404e-b31a-b32e6356aef7",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9knih4by",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#101820",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2t83itgf",
+      "id": "2",
+      "bbox": [
+        72,
+        42,
+        28,
+        4
+      ],
+      "geometry": "rect",
+      "fillColor": "#B7F64B",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/re1w7mp0",
+      "id": "3",
+      "bbox": [
+        114,
+        36,
+        360,
+        18
+      ],
+      "geometry": "rect",
+      "text": "PLATFORM ARCHITECTURE",
+      "textPreview": "PLATFORM ARCHITECTURE",
+      "resolvedFontSize": 11,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 11,
+        "typeface": "Aptos Mono",
+        "color": "#B8C2CF",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "PLATFORM ARCHITECTURE"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "PLATFORM ARCHITECTURE",
+          "resolvedTextStyle": {
+            "fontSize": 11,
+            "typeface": "Aptos Mono",
+            "color": "#B8C2CF",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "PLATFORM ARCHITECTURE",
+              "fontSize": 11,
+              "typeface": "Aptos Mono",
+              "color": "#B8C2CF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kb6xkf6d",
+      "id": "4",
+      "bbox": [
+        72,
+        64,
+        920,
+        110
+      ],
+      "geometry": "rect",
+      "text": "A modular spatial cloud, already shaped for pilots and SDK integration.",
+      "textPreview": "A modular spatial cloud, already shaped for pilots and SDK integration.",
+      "resolvedFontSize": 44,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 44,
+        "typeface": "Aptos Display",
+        "color": "#FFFFFF",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "A modular spatial cloud, already shaped for"
+          },
+          {
+            "index": 2,
+            "text": "pilots and SDK integration."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "A modular spatial cloud, already shaped for pilots and SDK integration.",
+          "resolvedTextStyle": {
+            "fontSize": 44,
+            "typeface": "Aptos Display",
+            "color": "#FFFFFF",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "A modular spatial cloud, already shaped for pilots and SDK integration.",
+              "fontSize": 44,
+              "typeface": "Aptos Display",
+              "color": "#FFFFFF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9w3m94fu",
+      "id": "5",
+      "bbox": [
+        70,
+        190,
+        320,
+        250
+      ],
+      "geometry": "rect",
+      "fillColor": "#172331",
+      "lineColor": "#2F4658",
+      "lineWidth": 1
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/25kb6xkf",
+      "id": "6",
+      "bbox": [
+        88,
+        206,
+        284,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Client surfaces",
+      "textPreview": "Client surfaces",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 20,
+        "typeface": "Aptos Display",
+        "color": "#B7F64B",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Client surfaces"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Client surfaces",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Aptos Display",
+            "color": "#B7F64B",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Client surfaces",
+              "fontSize": 20,
+              "typeface": "Aptos Display",
+              "color": "#B7F64B",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/rqd4vmtw",
+      "id": "7",
+      "bbox": [
+        88,
+        238,
+        284,
+        188
+      ],
+      "geometry": "rect",
+      "text": "Next.js portal\nScene upload, dashboard, 3D viewer, localization sandbox\nUnity SDK\nVPSClient, MapSpace, coordinate conversion",
+      "textPreview": "Next.js portal | Scene upload, dashboard, 3D viewer, localization sandbox | Unity SDK | VPSClient, MapSpace, coordinate conversion",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 15,
+        "typeface": "Aptos",
+        "color": "#C6CED8",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 6,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Next.js portal"
+          },
+          {
+            "index": 2,
+            "text": "Scene upload, dashboard, 3D viewer,"
+          },
+          {
+            "index": 3,
+            "text": "localization sandbox"
+          },
+          {
+            "index": 4,
+            "text": "Unity SDK"
+          },
+          {
+            "index": 5,
+            "text": "VPSClient, MapSpace, coordinate"
+          },
+          {
+            "index": 6,
+            "text": "conversion"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Next.js portal",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Next.js portal",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Scene upload, dashboard, 3D viewer, localization sandbox",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Scene upload, dashboard, 3D viewer, localization sandbox",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "Unity SDK",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Unity SDK",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "VPSClient, MapSpace, coordinate conversion",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "VPSClient, MapSpace, coordinate conversion",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kjm1cfa9",
+      "id": "8",
+      "bbox": [
+        480,
+        190,
+        320,
+        250
+      ],
+      "geometry": "rect",
+      "fillColor": "#132732",
+      "lineColor": "#2F4658",
+      "lineWidth": 1
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/94fu18jq",
+      "id": "9",
+      "bbox": [
+        498,
+        206,
+        284,
+        28
+      ],
+      "geometry": "rect",
+      "text": "API and orchestration",
+      "textPreview": "API and orchestration",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 20,
+        "typeface": "Aptos Display",
+        "color": "#B7F64B",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "API and orchestration"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "API and orchestration",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Aptos Display",
+            "color": "#B7F64B",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "API and orchestration",
+              "fontSize": 20,
+              "typeface": "Aptos Display",
+              "color": "#B7F64B",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1orytsvu",
+      "id": "10",
+      "bbox": [
+        498,
+        238,
+        284,
+        188
+      ],
+      "geometry": "rect",
+      "text": "FastAPI\n/scene upload, process, frames, anchors, tiles\n/vps localize, evaluation, agent WebSocket\nCelery worker + Redis queue",
+      "textPreview": "FastAPI | /scene upload, process, frames, anchors, tiles | /vps localize, evaluation, agent WebSocket | Celery worker + Redis queue",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 15,
+        "typeface": "Aptos",
+        "color": "#C6CED8",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 6,
+        "lines": [
+          {
+            "index": 1,
+            "text": "FastAPI"
+          },
+          {
+            "index": 2,
+            "text": "/scene upload, process, frames, anchors,"
+          },
+          {
+            "index": 3,
+            "text": "tiles"
+          },
+          {
+            "index": 4,
+            "text": "/vps localize, evaluation, agent"
+          },
+          {
+            "index": 5,
+            "text": "WebSocket"
+          },
+          {
+            "index": 6,
+            "text": "Celery worker + Redis queue"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "FastAPI",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "FastAPI",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "/scene upload, process, frames, anchors, tiles",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "/scene upload, process, frames, anchors, tiles",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "/vps localize, evaluation, agent WebSocket",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "/vps localize, evaluation, agent WebSocket",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "Celery worker + Redis queue",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Celery worker + Redis queue",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c7u54zid",
+      "id": "11",
+      "bbox": [
+        890,
+        190,
+        320,
+        250
+      ],
+      "geometry": "rect",
+      "fillColor": "#172331",
+      "lineColor": "#2F4658",
+      "lineWidth": 1
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/jm1cfa9w",
+      "id": "12",
+      "bbox": [
+        908,
+        206,
+        284,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Spatial engine",
+      "textPreview": "Spatial engine",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 20,
+        "typeface": "Aptos Display",
+        "color": "#B7F64B",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Spatial engine"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Spatial engine",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Aptos Display",
+            "color": "#B7F64B",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Spatial engine",
+              "fontSize": 20,
+              "typeface": "Aptos Display",
+              "color": "#B7F64B",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u18jqh0f",
+      "id": "13",
+      "bbox": [
+        908,
+        238,
+        284,
+        188
+      ],
+      "geometry": "rect",
+      "text": "ffmpeg frame extraction\nCOLMAP Structure-from-Motion\nGaussian Splat / fallback PLY\nORB + SIFT fallback, FAISS, solvePnPRansac",
+      "textPreview": "ffmpeg frame extraction | COLMAP Structure-from-Motion | Gaussian Splat / fallback PLY | ORB + SIFT fallback, FAISS, solvePnPRansac",
+      "resolvedFontSize": 15,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 15,
+        "typeface": "Aptos",
+        "color": "#C6CED8",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "ffmpeg frame extraction"
+          },
+          {
+            "index": 2,
+            "text": "COLMAP Structure-from-Motion"
+          },
+          {
+            "index": 3,
+            "text": "Gaussian Splat / fallback PLY"
+          },
+          {
+            "index": 4,
+            "text": "ORB + SIFT fallback, FAISS,"
+          },
+          {
+            "index": 5,
+            "text": "solvePnPRansac"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "ffmpeg frame extraction",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "ffmpeg frame extraction",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "COLMAP Structure-from-Motion",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "COLMAP Structure-from-Motion",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "Gaussian Splat / fallback PLY",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Gaussian Splat / fallback PLY",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "ORB + SIFT fallback, FAISS, solvePnPRansac",
+          "resolvedTextStyle": {
+            "fontSize": 15,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "ORB + SIFT fallback, FAISS, solvePnPRansac",
+              "fontSize": 15,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1032lszq",
+      "id": "14",
+      "bbox": [
+        390,
+        316,
+        90,
+        2
+      ],
+      "geometry": "rect",
+      "fillColor": "#B7F64B",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cfa9w3m9",
+      "id": "15",
+      "bbox": [
+        408,
+        292,
+        86,
+        18
+      ],
+      "geometry": "rect",
+      "text": "API calls",
+      "textPreview": "API calls",
+      "resolvedFontSize": 11,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 11,
+        "typeface": "Aptos Mono",
+        "color": "#B7F64B",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "API calls"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "API calls",
+          "resolvedTextStyle": {
+            "fontSize": 11,
+            "typeface": "Aptos Mono",
+            "color": "#B7F64B",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "API calls",
+              "fontSize": 11,
+              "typeface": "Aptos Mono",
+              "color": "#B7F64B",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/judg7ads",
+      "id": "16",
+      "bbox": [
+        800,
+        316,
+        90,
+        2
+      ],
+      "geometry": "rect",
+      "fillColor": "#37C8D6",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u9knih4b",
+      "id": "17",
+      "bbox": [
+        806,
+        274,
+        100,
+        18
+      ],
+      "geometry": "rect",
+      "text": "jobs + data",
+      "textPreview": "jobs + data",
+      "resolvedFontSize": 11,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 11,
+        "typeface": "Aptos Mono",
+        "color": "#37C8D6",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "jobs + data"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "jobs + data",
+          "resolvedTextStyle": {
+            "fontSize": 11,
+            "typeface": "Aptos Mono",
+            "color": "#37C8D6",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "jobs + data",
+              "fontSize": 11,
+              "typeface": "Aptos Mono",
+              "color": "#37C8D6",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/54zidony",
+      "id": "18",
+      "bbox": [
+        180,
+        510,
+        920,
+        74
+      ],
+      "geometry": "rect",
+      "fillColor": "#0E151D",
+      "lineColor": "#2F4658",
+      "lineWidth": 1
+    },
+    {
+      "order": 19,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cj6tovah",
+      "id": "19",
+      "bbox": [
+        198,
+        526,
+        884,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Storage layer",
+      "textPreview": "Storage layer",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 17,
+        "typeface": "Aptos Display",
+        "color": "#37C8D6",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Storage layer"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Storage layer",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "typeface": "Aptos Display",
+            "color": "#37C8D6",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Storage layer",
+              "fontSize": 17,
+              "typeface": "Aptos Display",
+              "color": "#37C8D6",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/crmhk3q5",
+      "id": "20",
+      "bbox": [
+        198,
+        558,
+        884,
+        20
+      ],
+      "geometry": "rect",
+      "text": "PostgreSQL metadata | raw frames | recon outputs | splats | features | anchors",
+      "textPreview": "PostgreSQL metadata | raw frames | recon outputs | splats | features | anchors",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 14,
+        "typeface": "Aptos",
+        "color": "#C6CED8",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "PostgreSQL metadata | raw frames | recon outputs | splats | features | anchors"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "PostgreSQL metadata | raw frames | recon outputs | splats | features | anchors",
+          "resolvedTextStyle": {
+            "fontSize": 14,
+            "typeface": "Aptos",
+            "color": "#C6CED8",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "PostgreSQL metadata | raw frames | recon outputs | splats | features | anchors",
+              "fontSize": 14,
+              "typeface": "Aptos",
+              "color": "#C6CED8"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1cfa9w3m",
+      "id": "21",
+      "bbox": [
+        72,
+        684,
+        900,
+        18
+      ],
+      "geometry": "rect",
+      "text": "Sources: backend/api/routes_scene.py; backend/api/routes_vps.py; backend/workers/tasks.py; unity-sdk/com.vps.sdk",
+      "textPreview": "Sources: backend/api/routes_scene.py; backend/api/routes_vps.py; backend/workers/tasks.py; unity-sdk/com.vps.sdk",
+      "resolvedFontSize": 9,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 9,
+        "typeface": "Aptos Mono",
+        "color": "#9AA4B2",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Sources: backend/api/routes_scene.py; backend/api/routes_vps.py; backend/workers/tasks.py; unity-sdk/com.vps.sdk"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Sources: backend/api/routes_scene.py; backend/api/routes_vps.py; backend/workers/tasks.py; unity-sdk/com.vps.sdk",
+          "resolvedTextStyle": {
+            "fontSize": 9,
+            "typeface": "Aptos Mono",
+            "color": "#9AA4B2",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Sources: backend/api/routes_scene.py; backend/api/routes_vps.py; backend/workers/tasks.py; unity-sdk/com.vps.sdk",
+              "fontSize": 9,
+              "typeface": "Aptos Mono",
+              "color": "#9AA4B2"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

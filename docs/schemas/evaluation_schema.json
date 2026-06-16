@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VPSEvaluationReport",
+  "type": "object",
+  "properties": {
+    "scene_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "num_frames": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sampled_frame_indices": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "best_config": {
+      "$ref": "#/$defs/config_result"
+    },
+    "worst_config": {
+      "$ref": "#/$defs/config_result"
+    },
+    "recommended_settings": {
+      "$ref": "#/$defs/settings_config"
+    },
+    "config_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/config_result"
+      }
+    }
+  },
+  "required": [
+    "scene_id",
+    "num_frames",
+    "sampled_frame_indices",
+    "best_config",
+    "worst_config",
+    "recommended_settings",
+    "config_results"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "settings_config": {
+      "type": "object",
+      "properties": {
+        "orb_nfeatures": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pixel_distance_threshold": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "ratio_test_threshold": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      "required": [
+        "orb_nfeatures",
+        "pixel_distance_threshold",
+        "ratio_test_threshold"
+      ],
+      "additionalProperties": false
+    },
+    "config_summary": {
+      "type": "object",
+      "properties": {
+        "scene_id": {
+          "type": "string"
+        },
+        "num_frames": {
+          "type": "integer"
+        },
+        "success_rate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "avg_inliers": {
+          "type": "number"
+        },
+        "avg_confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "avg_translation_error": {
+          "type": ["number", "null"]
+        },
+        "avg_rotation_error": {
+          "type": ["number", "null"]
+        }
+      },
+      "required": [
+        "scene_id",
+        "num_frames",
+        "success_rate",
+        "avg_inliers",
+        "avg_confidence",
+        "avg_translation_error",
+        "avg_rotation_error"
+      ],
+      "additionalProperties": false
+    },
+    "config_result": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "$ref": "#/$defs/settings_config"
+        },
+        "summary": {
+          "$ref": "#/$defs/config_summary"
+        },
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "best_case_frames": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "worst_case_frames": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "score": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "config",
+        "summary",
+        "failures",
+        "best_case_frames",
+        "worst_case_frames",
+        "score"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    min-height: 100%;
+    background:
+      linear-gradient(120deg, rgba(20, 99, 255, 0.08), transparent 34%),
+      linear-gradient(240deg, rgba(16, 166, 160, 0.12), transparent 38%),
+      #eef4f8;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100%;
+    color: #102033;
+    font-family: Aptos, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .mobile-shell {
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    background: #f6f9fc;
+    box-shadow: 0 24px 80px rgba(16, 32, 51, 0.18);
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(219, 230, 239, 0.9);
+    box-shadow: 0 18px 50px rgba(16, 32, 51, 0.12);
+    backdrop-filter: blur(18px);
+  }
+
+  .hospital-header {
+    background:
+      linear-gradient(140deg, rgba(20, 99, 255, 0.96), rgba(16, 166, 160, 0.92)),
+      linear-gradient(0deg, rgba(255, 255, 255, 0.08), transparent);
+  }
+
+  .wayfinding-map {
+    background:
+      linear-gradient(90deg, rgba(16, 32, 51, 0.06) 1px, transparent 1px),
+      linear-gradient(rgba(16, 32, 51, 0.06) 1px, transparent 1px),
+      linear-gradient(135deg, #eef6ff, #f8fbff 46%, #e8fbf7);
+    background-size: 28px 28px, 28px 28px, auto;
+  }
+}

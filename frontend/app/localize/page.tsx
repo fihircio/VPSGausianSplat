@@ -199,14 +199,14 @@ function LocalizeContent() {
                 <div className="grid grid-cols-2 gap-6">
                   <AccuracyCard 
                     label="Euclidean Distance" 
-                    value={evalData ? (evalData.summary.avg_translation_error * 100).toFixed(1) : "4.1"} 
+                    value={evalData ? (evalData.summary.avg_translation_error * 100).toFixed(1) : "---"} 
                     unit="cm" 
                     icon={<Target className="text-indigo-500 h-4 w-4" />} 
                     desc="Tested mean translation error"
                   />
                   <AccuracyCard 
                     label="Rotation Offset" 
-                    value={evalData ? evalData.summary.avg_rotation_error.toFixed(2) : "0.18"} 
+                    value={evalData ? evalData.summary.avg_rotation_error.toFixed(2) : "---"} 
                     unit="deg" 
                     icon={<Compass className="text-brand-secondary h-4 w-4" />} 
                     desc="Tested mean angular error"

@@ -30,6 +30,13 @@ This checklist tracks the 90-day commercialization objective: turn the current V
 - `[x]` Add benchmark JSON schema.
 - `[x]` Add backend tests for upload/process/localize/auth.
 - `[ ]` Add frontend smoke test for dashboard/viewer.
+- `[x]` Fix hardcoded accuracy defaults — show "---" when no eval data available.
+
+## Module 6: Accuracy Honesty
+- `[ ]` Calibrate poseToStatus thresholds against real validation data (correlate confidence/inliers vs measured translation error).
+- `[ ]` Add real-time translation-error estimate to VPS pose response (not just confidence proxy).
+- `[ ]` Display per-frame accuracy estimate in navigatus AR view.
+- `[ ]` Document validation methodology and expected accuracy range per scene type.
 
 ## Module 4: SDK And Developer Experience
 - `[ ]` Add Unity SDK API key support.
