@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, Layers, MapPin, Search, Cpu, Globe } from 'lucide-react';
+import { ArrowRight, Camera, Cpu, Globe, GitFork, Layers, MapPin, Search, Shield } from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="relative isolate overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
         <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
       </div>
@@ -14,20 +13,22 @@ export default function Home() {
           <div className="mt-24 sm:mt-32 lg:mt-16">
             <a href="#" className="inline-flex space-x-6">
               <span className="rounded-full bg-indigo-600/10 px-3 py-1 text-sm font-semibold leading-6 text-indigo-600 ring-1 ring-inset ring-indigo-600/10">
-                What's New
+                v0.2.0
               </span>
               <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
-                <span>v0.1.0 MVP Live</span>
+                <span>Gaussian Splatting VPS — Open Source</span>
                 <ArrowRight className="h-4 w-4 text-gray-400" />
               </span>
             </a>
           </div>
           <h1 className="mt-10 text-4xl font-black tracking-tighter text-gray-900 sm:text-7xl uppercase">
-            Clinical Precision <br/> for <span className="text-indigo-600">Spatial Health</span>
+            Turn Spaces Into <br/><span className="text-indigo-600">AR Environments</span>
           </h1>
           <p className="mt-6 text-xl leading-8 text-gray-600 font-medium">
-            Convert hospital wings into high-precision VPS maps. 
-            Achieve <span className="bg-indigo-50 text-indigo-700 px-2 rounded-lg font-black tracking-tight">sub-decimeter accuracy</span> depending on environment and benchmark configurations.
+            Photorealistic Visual Positioning System. 
+            Upload a phone video — get a 6DoF-localizable scene 
+            with <span className="bg-indigo-50 text-indigo-700 px-2 rounded-lg font-black tracking-tight">~4cm accuracy</span>.
+            No LiDAR, no platform lock-in.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
             <Link
@@ -46,12 +47,15 @@ export default function Home() {
           <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
             <div className="rounded-3xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-[2.5rem] lg:p-4 shadow-2xl">
               <div className="bg-white rounded-2xl shadow-inner p-8 grid grid-cols-2 gap-6 w-full lg:w-[480px]">
-                <FeatureItem icon={<MapPin />} title="Sub-cm Pose" desc="Precise 6DoF estimation" />
-                <FeatureItem icon={<Cpu />} title="Web GPU" titleColor="text-orange-600" desc="Real-time splat rendering" />
-                <FeatureItem icon={<Search />} title="ORB Indexing" desc="Fast descriptor retrieval" />
-                <FeatureItem icon={<Globe />} title="Open API" desc="Anchor objects anywhere" />
+                <FeatureItem icon={<Camera />} title="Video In, Scene Out" desc="Upload. Process. Localize." />
+                <FeatureItem icon={<Cpu />} title="Gaussian Splatting" titleColor="text-orange-600" desc="Photorealistic rendering" />
+                <FeatureItem icon={<Globe />} title="Open REST API" desc="Integrate from any stack" />
+                <FeatureItem icon={<Shield />} title="Private Maps" desc="Self-host or cloud" />
               </div>
             </div>
+            <p className="mt-4 text-center text-xs text-gray-400 font-bold uppercase tracking-widest">
+              Used in hospitals · malls · campuses · events
+            </p>
           </div>
         </div>
       </div>
@@ -61,7 +65,7 @@ export default function Home() {
 
 function FeatureItem({ icon, title, titleColor = "text-indigo-600", desc }: any) {
   return (
-    <div className="p-4 rounded-xl bg-gray-50 border border-gray-100 italic transition-transform hover:-translate-y-1">
+    <div className="p-4 rounded-xl bg-gray-50 border border-gray-100 transition-transform hover:-translate-y-1">
       <div className={`mb-2 font-bold flex items-center ${titleColor}`}>
         <span className="mr-2 opacity-70 scale-75">{icon}</span>
         {title}
