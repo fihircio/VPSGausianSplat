@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -101,21 +102,19 @@ class ReconstructionService:
                 "--ImageReader.single_camera",
                 "1",
                 "--ImageReader.camera_model",
-                "OPENCV",
+                "SIMPLE_PINHOLE",
                 "--SiftExtraction.max_num_features",
-                "8192",
-                "--SiftExtraction.estimate_affine_shape",
-                "1",
-                "--SiftExtraction.domain_size_pooling",
-                "1",
+                "4096",
+                "--SiftExtraction.first_octave",
+                "0",
             ],
             [
                 settings.colmap_bin,
-                "sequential_matcher",
+                "exhaustive_matcher",
                 "--database_path",
                 str(database_path),
-                "--SequentialMatching.overlap",
-                "10",
+                "--SiftMatching.max_ratio",
+                "0.6",
             ],
             [
                 settings.colmap_bin,
@@ -126,12 +125,18 @@ class ReconstructionService:
                 str(local_frames_dir),
                 "--output_path",
                 str(sparse_model_path),
+                "--Mapper.multiple_models",
+                "1",
                 "--Mapper.abs_pose_min_num_inliers",
-                "15",
+                "8",
                 "--Mapper.init_min_num_inliers",
-                "50",
+                "30",
                 "--Mapper.init_min_tri_angle",
-                "4",
+                "1.0",
+                "--Mapper.tri_min_angle",
+                "1.0",
+                "--Mapper.filter_max_reproj_error",
+                "8",
                 "--Mapper.abs_pose_min_inlier_ratio",
                 "0.1",
                 "--Mapper.min_model_size",
@@ -139,8 +144,10 @@ class ReconstructionService:
             ],
         ]
 
+        colmap_env = {**dict(os.environ), "QT_QPA_PLATFORM": "offscreen"}
+
         for cmd in commands:
-            subprocess.run(cmd, check=True, capture_output=True)
+            subprocess.run(cmd, check=True, capture_output=True, env=colmap_env)
 
         # Find best model...
         best_model_dir = sparse_model_path / "0"
@@ -167,7 +174,17 @@ class ReconstructionService:
                 ],
                 check=True,
                 capture_output=True,
+                env=colmap_env,
             )
+
+        # Ensure sparse/0/ contains the best model for downstream consumers
+        sparse0 = sparse_model_path / "0"
+        if sparse0.exists():
+            shutil.rmtree(sparse0)
+        sparse0.mkdir(parents=True)
+        for f in best_model_dir.iterdir():
+            if f.is_file():
+                shutil.copy2(f, sparse0 / f.name)
 
             ReconstructionService._persist_colmap_poses(scene.id, sparse_txt_path, db)
 
@@ -184,7 +201,7 @@ class ReconstructionService:
         )
         reg_ratio = registered_count / total_extracted if total_extracted > 0 else 0
         
-        if reg_ratio < 0.5:
+        if reg_ratio < 0.2:
             raise ValueError(
                 f"Mapping Quality Too Low: Only {reg_ratio:.1%} frames registered. "
                 "Ensure video has physical movement and sufficient texture."

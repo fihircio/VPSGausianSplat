@@ -63,7 +63,6 @@ class LocalStorageProvider(StorageProvider):
         return str(dest.resolve())
 
     def get_url(self, remote_path: str) -> str:
-        # For local, we return a path relative to the storage root or absolute
         return str((self.root / remote_path).resolve())
 
     def ensure_local_copy(self, remote_path: str) -> Path:

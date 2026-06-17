@@ -5,9 +5,11 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+_backend_env = str(Path(__file__).resolve().parent.parent / ".env")
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(".env", "../.env"),
+        env_file=(_backend_env, ".env"),
         extra="ignore"
     )
 
@@ -41,6 +43,7 @@ class Settings(BaseSettings):
 
     # Security & Gating Settings
     api_key: str | None = None
+    google_api_key: str = ""
     allow_debug_endpoints: bool = True
     allow_destructive_endpoints: bool = True
     max_upload_size_mb: int = 500

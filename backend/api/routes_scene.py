@@ -21,6 +21,7 @@ from backend.utils.db import get_db
 from backend.utils.storage import ensure_scene_dirs, save_upload, purge_scene_data
 from backend.workers.tasks import process_scene_task
 from backend.api.auth import validate_api_key
+import threading
 
 router = APIRouter(prefix="/scene", tags=["scene"])
 
@@ -172,12 +173,13 @@ def process_scene(scene_id: str, force_rebuild: bool = False, db: Session = Depe
     scene = db.get(Scene, scene_id)
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
-    task = process_scene_task.delay(scene_id, force_rebuild)
     scene.status = "QUEUED"
     scene.error_message = None
     db.add(scene)
     db.commit()
-    return SceneProcessResponse(scene_id=scene_id, task_id=task.id, status="QUEUED")
+    task_id = str(uuid4())
+    threading.Thread(target=process_scene_task, args=(scene_id, force_rebuild), daemon=True).start()
+    return SceneProcessResponse(scene_id=scene_id, task_id=task_id, status="QUEUED")
 
 
 @router.get("/{scene_id}", response_model=SceneResponse)

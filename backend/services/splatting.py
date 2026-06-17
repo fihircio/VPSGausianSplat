@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 import shutil
 
@@ -37,19 +38,23 @@ class SplattingService:
             gs_input.mkdir(parents=True, exist_ok=True)
             shutil.copytree(local_frames_dir, gs_input / "images")
             shutil.copytree(local_sparse_dir / "sparse", gs_input / "sparse")
+            SplattingService._select_best_sparse_model(gs_input / "sparse")
+            log_file = output_dir / "training.log"
             cmd = [
-                "python",
+                sys.executable,
                 str(gaussian_repo / "train.py"),
                 "-s",
                 str(gs_input),
                 "-m",
                 str(output_dir),
             ]
-            subprocess.run(cmd, check=True, capture_output=True)
+            with log_file.open("wb") as log:
+                subprocess.run(cmd, check=True, stdout=log, stderr=subprocess.STDOUT)
             ply_candidates = sorted(output_dir.rglob("*.ply"))
             if not ply_candidates:
                 raise RuntimeError("Gaussian Splatting training finished but no .ply found")
-            splat_path_local = ply_candidates[-1]
+            splat_path_local = local_splat_dir / "point_cloud.ply"
+            shutil.copy2(ply_candidates[-1], splat_path_local)
         else:
             splat_path_local = local_splat_dir / "sparse_points_fallback.ply"
             SplattingService._export_colmap_points_to_ply(
@@ -66,6 +71,28 @@ class SplattingService:
         db.add(scene)
         db.commit()
         return scene.splat_path
+
+    @staticmethod
+    def _select_best_sparse_model(sparse_dir: Path) -> None:
+        models = sorted([d for d in sparse_dir.iterdir() if d.is_dir() and d.name.isdigit()])
+        if len(models) <= 1:
+            return
+        def _count_images(model_dir: Path) -> int:
+            for f in ["images.bin", "images.txt"]:
+                p = model_dir / f
+                if p.exists():
+                    import struct
+                    data = p.read_bytes()
+                    if f.endswith(".bin"):
+                        return struct.unpack_from("Q", data, 0)[0] if len(data) >= 8 else 0
+                    return sum(1 for line in data.decode().splitlines() if line and not line.startswith("#"))
+            return 0
+        best = max(models, key=_count_images)
+        if best.name != "0":
+            best_dir = sparse_dir / "0"
+            if best_dir.exists():
+                shutil.rmtree(best_dir)
+            shutil.copytree(best, best_dir)
 
     @staticmethod
     def _export_colmap_points_to_ply(points_path: Path, output_ply: Path) -> None:
