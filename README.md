@@ -1,160 +1,194 @@
-# VPS + Gaussian Splatting MVP Backend
+# VPSGaussianSplat
 
-This repository contains an MVP backend for a Visual Positioning System (VPS) pipeline integrated with COLMAP reconstruction and Gaussian Splatting-compatible output.
+**Photorealistic Visual Positioning System — Gaussian Splatting–native, web-first, open API.**
 
-## Stack
+Turn a phone video into a 6DoF-localizable AR environment in minutes. No LiDAR, no proprietary SDK lock-in, no mesh pipelines.
 
+[![Status](https://img.shields.io/badge/status-pilot--ready-blueviolet)](https://github.com/fihircio/VPSGausianSplat)
+[![Validation](https://img.shields.io/badge/avg_error-4.1cm-success)](docs/validation_checklist.md)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+---
+
+## Why Gaussian Splatting + VPS?
+
+| Problem | Most solutions | This one |
+|---------|----------------|----------|
+| AR visual quality | Mesh/point-cloud — blocks and dots | **Photorealistic Gaussian splats** — real-time novel view synthesis |
+| Platform lock-in | Niantic Lightship, Apple ARKit, Google VPS | **Web-first + Open API** — any device, any framework |
+| Pipeline fragmentation | Scan one tool, process another, host a third | **End-to-end unified** — upload → reconstruct → host → localize → deploy |
+| Indoor coverage | GPS-denied dead zone | **Private spatial maps** — hospitals, malls, campuses, events |
+
+**Validation:** 0.036m avg translation error, 95% success rate on benchmark (ORB 2000 features, real-world scene).
+
+---
+
+## Quickstart (30 seconds)
+
+```bash
+# 1. Upload a video
+curl -X POST http://localhost:8000/scene/upload \
+  -F "file=@corridor.mp4" \
+  -F "name=my-scene"
+
+# → returns {"id": "<scene-id>", ...}
+
+# 2. Process it (COLMAP SfM → FAISS index → Gaussian splat)
+curl -X POST http://localhost:8000/scene/<scene-id>/process
+
+# 3. Localize a query frame
+curl -X POST http://localhost:8000/vps/localize \
+  -F "scene_id=<scene-id>" \
+  -F "query_image=@query.jpg"
+
+# → returns {"position": [x,y,z], "rotation": [w,x,y,z], "confidence": 0.89}
+```
+
+That's it. From raw video to 6DoF pose in a few minutes.
+
+---
+
+## Architecture
+
+```text
+┌─────────────┐    ┌──────────────┐    ┌───────────────┐
+│  Frontend    │    │  Navigatus   │    │  Unity SDK    │
+│  (Next.js)   │    │  (CRA/PWA)   │    │  (C# package) │
+└──────┬───────┘    └──────┬───────┘    └───────┬───────┘
+       │                   │                    │
+       └───────────────────┼────────────────────┘
+                           │ REST API + WebSocket
+                           ▼
+┌──────────────────────────────────────────────────┐
+│              FastAPI Backend  (port 8000)         │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐  │
+│  │  Scene   │ │  VPS     │ │  Multi-Agent     │  │
+│  │  Upload  │ │  Localize│ │  WebSocket Sync  │  │
+│  │  Process │ │  FAISS   │ │  Spatial Graph   │  │
+│  └────┬─────┘ └────┬─────┘ └────────┬─────────┘  │
+│       │            │                │             │
+│       ▼            ▼                ▼             │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐  │
+│  │  COLMAP  │ │  FAISS   │ │  PostgreSQL      │  │
+│  │  SfM     │ │  Index   │ │  + Redis         │  │
+│  └──────────┘ └──────────┘ └──────────────────┘  │
+│  ┌──────────────────────────────────────────────┐ │
+│  │  Storage: Local / S3 / Azure Blob            │ │
+│  └──────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────┘
+```
+
+**Storage backend** is pluggable — swap between local disk, S3, or Azure Blob without code changes.
+
+---
+
+## Modules
+
+| Module | What it does |
+|--------|-------------|
+| **Capture / Upload** | Video (.mp4, .mov, .webm) or image sequence via REST API. Size limits, format validation, API key gating. |
+| **Reconstruction** | COLMAP SfM → sparse point cloud. Gaussian Splatting training (optional, with GPU). FAISS feature index for VPS retrieval. |
+| **Viewer** | Web-based Three.js Gaussian splat renderer with octree tiling for large scenes. |
+| **VPS Localization** | ORB/SIFT features → FAISS retrieval → PnP RANSAC → 6DoF pose (position, rotation, confidence). |
+| **AR Export** | REST anchor API + Unity SDK for deploying to mobile AR apps. |
+| **Multi-Agent Sync** | Real-time WebSocket spatial graph for multi-device shared AR experiences. |
+| **Synthetic Data** | Google 3D procedural render pipeline for pretraining and evaluation (10K-frame datasets). |
+
+---
+
+## API Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/health` | — | Health check |
+| `POST` | `/scene/upload` | API key | Upload video/image for reconstruction |
+| `GET` | `/scene` | — | List all scenes |
+| `GET` | `/scene/{id}` | — | Scene status and metadata |
+| `POST` | `/scene/{id}/process` | API key | Trigger COLMAP SfM + FAISS indexing |
+| `DELETE` | `/scene/{id}` | API key | Remove scene data |
+| `POST` | `/vps/localize` | API key | Localize a query image against a scene |
+| `POST` | `/scene/{id}/anchors` | API key | Create AR anchor |
+| `GET` | `/scene/{id}/anchors` | — | List anchors |
+| `WS` | `/ws/{scene_id}` | API key | Real-time multi-agent sync |
+
+Full API contract: [`docs/api_contract.md`](docs/api_contract.md)
+
+---
+
+## Quickstart (Full Setup)
+
+### Prerequisites
 - Python 3.10+
-- FastAPI
-- Celery + Redis
-- PostgreSQL
-- OpenCV ORB
-- FAISS
-- COLMAP (external binary)
-- ffmpeg (external binary)
-- PyTorch (for future/optional Gaussian Splatting training execution)
+- PostgreSQL 14+
+- Redis 7+
+- COLMAP (for SfM reconstruction)
+- ffmpeg (for frame extraction)
+
+### Local dev
+
+```bash
+git clone https://github.com/fihircio/VPSGausianSplat.git
+cd VPSGausianSplat
+
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+cp .env.example .env   # edit DATABASE_URL, API_KEY, etc.
+uvicorn backend.api.main:app --reload --port 8000
+```
+
+### Using Docker
+
+```bash
+docker compose up -d
+```
+
+---
 
 ## Project Structure
 
 ```text
-backend/
-  api/
-    main.py
-    routes_scene.py
-    routes_vps.py
-    schemas.py
-  services/
-    reconstruction.py
-    splatting.py
-    vps.py
-  workers/
-    celery_app.py
-    tasks.py
-  models/
-    base.py
-    scene.py
-    frame.py
-    feature_set.py
-  utils/
-    config.py
-    db.py
-    ffmpeg.py
-    geometry.py
-    storage.py
-  storage/
-    raw/
-    frames/
-    recon/
-    splats/
-    features/
+backend/          → FastAPI server + services
+  api/            → REST routes, auth, schemas
+  services/       → COLMAP, VPS, splatting, features, Google 3D
+  workers/        → Celery async tasks
+  scripts/        → Benchmarking, synthetic data, evaluation
+  models/         → SQLAlchemy ORM models
+  utils/          → Config, DB, storage, geometry, ffmpeg
+frontend/         → Next.js 16 portal (dashboard, upload, localize, viewer)
+navigatus/        → CRA mobile PWA (hospital nav, AR view, scene recording)
+docs/             → Commercial, technical, and API documentation
 ```
 
-## What the MVP Implements
+---
 
-1. Input upload (`image` or `video`)
-2. Frame extraction via ffmpeg
-3. COLMAP SfM pipeline (`feature_extractor`, `exhaustive_matcher`, `mapper`, `model_converter`)
-4. Camera intrinsics/extrinsics parsed and stored per frame
-5. Gaussian Splatting integration path:
-   - If `GAUSSIAN_SPLATTING_REPO` is configured and valid, backend calls graphdeco `train.py`
-   - Otherwise, fallback `.ply` is exported from COLMAP sparse points
-6. ORB feature database for VPS:
-   - ORB features extracted on reconstructed frames
-   - Adjacent-frame triangulation builds 3D landmarks
-   - FAISS index stores descriptors
-7. VPS localization API:
-   - Query image ORB features
-   - FAISS retrieval for landmark matches
-   - `solvePnPRansac` pose estimation
-   - Returns `{position, rotation, confidence}`
+## Comparison
 
-## API Endpoints
+| | VPSGaussianSplat | MultiSet.ai | Niantic Lightship | Apple ARKit | Immersal |
+|---|---|---|---|---|---|
+| **Rendering** | Gaussian Splatting (photorealistic) | Mesh | Mesh | Mesh | Mesh |
+| **VPS** | Built-in (FAISS + PnP) | Built-in | Built-in | ARWorldMap | Built-in |
+| **Platform** | Web + Unity SDK | Mobile SDK | Mobile SDK | iOS only | Mobile SDK |
+| **Self-host** | ✅ Open source | ❌ Cloud only | ❌ | ❌ | ❌ |
+| **Indoor maps** | ✅ Private scenes | ✅ | ❌ | ❌ | ✅ |
+| **Pricing** | Open source + SaaS tiers | Enterprise only | Per query | Free (iOS lock-in) | Per m² |
 
-- `POST /scene/upload`
-- `POST /scene/{id}/process`
-- `GET /scene/{id}`
-- `POST /vps/localize`
-- `GET /health`
+---
 
-## Local Run Instructions
+## Documentation
 
-### 1) Infrastructure
+| Link | What |
+|------|------|
+| [API Contract](docs/api_contract.md) | Full endpoint reference |
+| [Capture Protocol](docs/capture_protocol.md) | How to record good scenes |
+| [Demo Walkthrough](docs/demo_walkthrough.md) | End-to-end demo script |
+| [Validation Check](docs/validation_checklist.md) | Accuracy benchmarks |
+| [90-Day Plan](docs/commercialization_90_day_plan.md) | Commercial roadmap |
+| [Roadmap Checklist](docs/roadmap_checklist.md) | Current milestone tracking |
+| [Google 3D Pipeline](docs/google_3d_training_pipeline.md) | Synthetic data strategy |
 
-```bash
-cd /Users/fihiromar/Desktop/WORKS/20260308_VPSMAP/WIP/backend
-docker compose up -d
-```
+---
 
-### 2) Python env
+## License
 
-```bash
-cd /Users/fihiromar/Desktop/WORKS/20260308_VPSMAP/WIP
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt
-cp backend/.env.example .env
-```
-
-Set these in `.env` if needed:
-- `COLMAP_BIN` (default `colmap`)
-- `FFMPEG_BIN` (default `ffmpeg`)
-- `GAUSSIAN_SPLATTING_REPO` (optional path to graphdeco repo)
-
-### 3) Run API
-
-```bash
-uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-### 4) Run worker
-
-```bash
-celery -A backend.workers.celery_app:celery_app worker -l info
-```
-
-## Example API Usage
-
-### Upload a scene
-
-```bash
-curl -X POST http://localhost:8000/scene/upload \
-  -F "name=test-scene" \
-  -F "file=@/absolute/path/to/video.mp4"
-```
-
-### Process scene
-
-```bash
-curl -X POST http://localhost:8000/scene/<scene_id>/process
-```
-
-### Query scene status
-
-```bash
-curl http://localhost:8000/scene/<scene_id>
-```
-
-### Localize query image
-
-```bash
-curl -X POST http://localhost:8000/vps/localize \
-  -F "scene_id=<scene_id>" \
-  -F "query_image=@/absolute/path/to/query.jpg"
-```
-
-Expected localization response:
-
-```json
-{
-  "position": [1.23, -0.51, 2.07],
-  "rotation": [0.01, 0.72, -0.03, 0.69],
-  "confidence": 0.78
-}
-```
-
-## Notes
-
-- This is an MVP pipeline prioritizing modularity and end-to-end flow.
-- ORB is used intentionally for baseline simplicity.
-- Database schema is created automatically at app startup.
-- For production, add migrations (Alembic), object storage abstraction (S3 client), and robust monitoring/logging.
+MIT — see [LICENSE](LICENSE).

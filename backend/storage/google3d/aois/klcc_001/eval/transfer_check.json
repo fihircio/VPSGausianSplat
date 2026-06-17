@@ -1,0 +1,243 @@
+{
+  "schema_version": "synth_to_real_transfer.v1",
+  "timestamp": "2026-06-16T00:55:08Z",
+  "synthetic_aoi_id": "klcc_001",
+  "real_label": "indoor-corridor",
+  "real_source": "backend/storage/frames/bcaa4187-b6f0-4d4c-8996-b234ba0af8e1",
+  "synthetic_frame_count": 31,
+  "real_frame_count": 31,
+  "modes": [
+    "ORB",
+    "SIFT"
+  ],
+  "results": [
+    {
+      "domain_pair": "synthetic->synthetic",
+      "mode": "ORB",
+      "pairs_evaluated": 25,
+      "match_stats": {
+        "mean": 141.52,
+        "median": 58.0,
+        "min": 19,
+        "max": 1432
+      },
+      "inlier_stats": {
+        "mean": 109.36,
+        "median": 9.0,
+        "min": 1,
+        "max": 1432
+      },
+      "inlier_ratio": {
+        "mean": 0.3626607175024168,
+        "median": 0.23255813953488372,
+        "std": 0.32922291401426845
+      },
+      "descriptor_distance": {
+        "mean": 16.36940266073144,
+        "median": 16.486486486486488
+      }
+    },
+    {
+      "domain_pair": "indoor-corridor->indoor-corridor",
+      "mode": "ORB",
+      "pairs_evaluated": 36,
+      "match_stats": {
+        "mean": 863.5277777777778,
+        "median": 625.5,
+        "min": 268,
+        "max": 3000
+      },
+      "inlier_stats": {
+        "mean": 435.3333333333333,
+        "median": 9.5,
+        "min": 0,
+        "max": 3000
+      },
+      "inlier_ratio": {
+        "mean": 0.19028592195372207,
+        "median": 0.018615999385230154,
+        "std": 0.3642367993861978
+      },
+      "descriptor_distance": {
+        "mean": 40.93499270810809,
+        "median": 48.47021658843194
+      }
+    },
+    {
+      "domain_pair": "synthetic->indoor-corridor",
+      "mode": "ORB",
+      "pairs_evaluated": 30,
+      "match_stats": {
+        "mean": 89.7,
+        "median": 70.5,
+        "min": 14,
+        "max": 248
+      },
+      "inlier_stats": {
+        "mean": 5.8,
+        "median": 6.0,
+        "min": 0,
+        "max": 11
+      },
+      "inlier_ratio": {
+        "mean": 0.09986306406431451,
+        "median": 0.07156432748538011,
+        "std": 0.08413021506866691
+      },
+      "descriptor_distance": {
+        "mean": 49.332594457063614,
+        "median": 48.76605679435868
+      }
+    },
+    {
+      "domain_pair": "indoor-corridor->synthetic",
+      "mode": "ORB",
+      "pairs_evaluated": 30,
+      "match_stats": {
+        "mean": 89.7,
+        "median": 70.5,
+        "min": 14,
+        "max": 248
+      },
+      "inlier_stats": {
+        "mean": 5.966666666666667,
+        "median": 6.0,
+        "min": 2,
+        "max": 10
+      },
+      "inlier_ratio": {
+        "mean": 0.11907375425148416,
+        "median": 0.09700176366843033,
+        "std": 0.09670239020885162
+      },
+      "descriptor_distance": {
+        "mean": 49.332594457063614,
+        "median": 48.76605679435868
+      }
+    },
+    {
+      "domain_pair": "synthetic->synthetic",
+      "mode": "SIFT",
+      "pairs_evaluated": 25,
+      "match_stats": {
+        "mean": 55.56,
+        "median": 25.0,
+        "min": 15,
+        "max": 321
+      },
+      "inlier_stats": {
+        "mean": 40.72,
+        "median": 8.0,
+        "min": 3,
+        "max": 321
+      },
+      "inlier_ratio": {
+        "mean": 0.4543724027179297,
+        "median": 0.35,
+        "std": 0.2807394328441744
+      },
+      "descriptor_distance": {
+        "mean": 130.59491078416468,
+        "median": 154.9369754433632
+      }
+    },
+    {
+      "domain_pair": "indoor-corridor->indoor-corridor",
+      "mode": "SIFT",
+      "pairs_evaluated": 36,
+      "match_stats": {
+        "mean": 569.8333333333334,
+        "median": 333.0,
+        "min": 92,
+        "max": 3265
+      },
+      "inlier_stats": {
+        "mean": 301.75,
+        "median": 7.0,
+        "min": 0,
+        "max": 3265
+      },
+      "inlier_ratio": {
+        "mean": 0.19208638221136481,
+        "median": 0.023123123123123125,
+        "std": 0.36201421278482704
+      },
+      "descriptor_distance": {
+        "mean": 218.30005796824597,
+        "median": 259.93378587809593
+      }
+    },
+    {
+      "domain_pair": "synthetic->indoor-corridor",
+      "mode": "SIFT",
+      "pairs_evaluated": 30,
+      "match_stats": {
+        "mean": 41.93333333333333,
+        "median": 35.0,
+        "min": 14,
+        "max": 104
+      },
+      "inlier_stats": {
+        "mean": 5.266666666666667,
+        "median": 5.0,
+        "min": 2,
+        "max": 7
+      },
+      "inlier_ratio": {
+        "mean": 0.1500745557845016,
+        "median": 0.14048423423423423,
+        "std": 0.058765835247303035
+      },
+      "descriptor_distance": {
+        "mean": 252.43606214565042,
+        "median": 250.80560510147404
+      }
+    },
+    {
+      "domain_pair": "indoor-corridor->synthetic",
+      "mode": "SIFT",
+      "pairs_evaluated": 30,
+      "match_stats": {
+        "mean": 41.93333333333333,
+        "median": 35.0,
+        "min": 14,
+        "max": 104
+      },
+      "inlier_stats": {
+        "mean": 5.0,
+        "median": 5.0,
+        "min": 2,
+        "max": 7
+      },
+      "inlier_ratio": {
+        "mean": 0.14868753105452048,
+        "median": 0.13674645390070922,
+        "std": 0.07691449728461366
+      },
+      "descriptor_distance": {
+        "mean": 252.43606214565037,
+        "median": 250.80560510147404
+      }
+    }
+  ],
+  "summary": {
+    "ORB": {
+      "within_domain_mean_inlier_ratio": 0.27647331972806943,
+      "cross_domain_mean_inlier_ratio": 0.10946840915789934,
+      "transfer_gap": 0.16700491057017008,
+      "synthetic_self_inlier_ratio": 0.3626607175024168,
+      "indoor-corridor_self_inlier_ratio": 0.19028592195372207,
+      "synthetic_to_indoor-corridor_inlier_ratio": 0.09986306406431451,
+      "indoor-corridor_to_synthetic_inlier_ratio": 0.11907375425148416
+    },
+    "SIFT": {
+      "within_domain_mean_inlier_ratio": 0.32322939246464727,
+      "cross_domain_mean_inlier_ratio": 0.14938104341951103,
+      "transfer_gap": 0.17384834904513624,
+      "synthetic_self_inlier_ratio": 0.4543724027179297,
+      "indoor-corridor_self_inlier_ratio": 0.19208638221136481,
+      "synthetic_to_indoor-corridor_inlier_ratio": 0.1500745557845016,
+      "indoor-corridor_to_synthetic_inlier_ratio": 0.14868753105452048
+    }
+  }
+}

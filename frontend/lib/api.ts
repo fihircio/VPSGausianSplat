@@ -18,6 +18,7 @@ function joinUrl(baseUrl: string, path: string): string {
 
 export const API_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
 export const WS_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_WS_BASE_URL);
+export const API_KEY = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_KEY);
 
 export function getApiBaseUrl(): string {
   return API_BASE_URL;
@@ -66,6 +67,14 @@ export function toApiStorageUrl(path: string | null | undefined): string | null 
 const client = axios.create({
   baseURL: API_BASE_URL,
 });
+
+// Inject API key into all requests if configured
+if (API_KEY) {
+  client.interceptors.request.use((config) => {
+    config.headers['X-API-Key'] = API_KEY;
+    return config;
+  });
+}
 
 export const api = {
   // Scene Upload
