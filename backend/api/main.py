@@ -1,5 +1,8 @@
 import asyncio
+import json
 from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -50,11 +53,23 @@ else:
         url = storage.get_url(file_path)
         return RedirectResponse(url)
 
-cors_origins_env = settings.cors_allowed_origins
-if cors_origins_env == "*":
-    cors_origins_list = ["*"]
+# Load CORS origins from JSON file (written by settings UI), fall back to env var
+cors_file = settings.storage_root / "cors_origins.json"
+if cors_file.exists():
+    try:
+        cors_data = json.loads(cors_file.read_text())
+        cors_origins_list = cors_data if isinstance(cors_data, list) else ["*"]
+    except (json.JSONDecodeError, OSError):
+        cors_origins_list = ["*"]
 else:
-    cors_origins_list = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+    cors_origins_env = settings.cors_allowed_origins
+    if cors_origins_env == "*":
+        cors_origins_list = ["*"]
+    else:
+        cors_origins_list = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+    # Seed the file so settings UI can modify it
+    cors_file.parent.mkdir(parents=True, exist_ok=True)
+    cors_file.write_text(json.dumps(cors_origins_list, indent=2))
 
 app.add_middleware(
     CORSMiddleware,

@@ -27,6 +27,7 @@ export interface LocalizeResponse {
   rotation: [number, number, number, number];
   inliers: number;
   confidence: number;
+  hint_used: string | null;
 }
 
 export interface EvaluationReport {
