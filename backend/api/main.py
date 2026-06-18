@@ -11,10 +11,9 @@ from backend.utils.storage import get_storage
 from backend.services.sync_service import sync_manager
 
 async def persist_agent_states_loop():
-    """Background task to periodically save agent poses to DB."""
     while True:
         try:
-            await asyncio.sleep(5)  # Persist every 5 seconds
+            await asyncio.sleep(5)
             with SessionLocal() as db:
                 sync_manager.persist_agent_states(db)
         except Exception as e:
@@ -23,28 +22,21 @@ async def persist_agent_states_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Ensure DB and Storage are ready
     settings = get_settings()
     init_db()
-    
-    # Start background task for agent sync persistence
     persistence_task = asyncio.create_task(persist_agent_states_loop())
-    
     yield
-    # Cleanup
     persistence_task.cancel()
     try:
         await persistence_task
     except asyncio.CancelledError:
         pass
 
-# 1. Initialize Settings
 settings = get_settings()
 storage_path = str(settings.storage_root.resolve())
 
 app = FastAPI(title="VPS Backend", version="0.1.0", lifespan=lifespan)
 
-# 2. Add Static Mount or Cloud Redirect
 if settings.storage_backend.upper() == "LOCAL":
     from fastapi.staticfiles import StaticFiles
     app.mount("/storage", StaticFiles(directory=storage_path), name="storage")
@@ -55,7 +47,6 @@ else:
         url = storage.get_url(file_path)
         return RedirectResponse(url)
 
-# 3. Add Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -64,7 +55,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 4. Include Routers
 app.include_router(scene_router)
 app.include_router(vps_router)
 
@@ -80,7 +70,6 @@ def debug_path():
     if not settings.allow_debug_endpoints:
         raise HTTPException(status_code=403, detail="Debug endpoints are disabled.")
     root = settings.storage_root.resolve()
-    # Check for the specific problematic file
     target_ply = root / "splats" / "bcaa4187-b6f0-4d4c-8996-b234ba0af8e1" / "sparse_points_fallback.ply"
     return {
         "storage_root": str(root),
@@ -89,8 +78,6 @@ def debug_path():
         "file_exists_on_disk": target_ply.exists(),
         "cwd": os.getcwd(),
     }
-
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.api.main:app", host="0.0.0.0", port=8000, reload=True)
