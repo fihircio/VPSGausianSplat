@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from backend.api.routes_auth import router as auth_router
 from backend.api.routes_scene import router as scene_router
 from backend.api.routes_vps import router as vps_router
 from backend.utils.config import get_settings
@@ -55,6 +56,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(scene_router)
 app.include_router(vps_router)
 

@@ -6,20 +6,22 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
+from backend.api.auth import require_scope, SCOPE_QUERY
 from backend.api.schemas import EvaluationResponse, LocalizeResponse, AgentPoseUpdate
+from backend.services.auth_service import AuthContext
 from backend.services.vps import VPSService
 from backend.services.sync_service import sync_manager
 from backend.utils.config import get_settings
 from backend.utils.db import get_db
+from backend.utils.image import resize_if_needed
 from backend.utils.storage import save_upload, get_storage
-from backend.api.auth import validate_api_key
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/vps", tags=["vps"])
 
 
-@router.post("/localize", response_model=LocalizeResponse, dependencies=[Depends(validate_api_key)])
+@router.post("/localize", response_model=LocalizeResponse, dependencies=[Depends(require_scope(SCOPE_QUERY))])
 async def localize(
     scene_id: str = Form(...),
     query_image: UploadFile = File(...),
@@ -32,6 +34,7 @@ async def localize(
 ) -> LocalizeResponse:
     settings = get_settings()
     query_path = save_upload(query_image, f"queries/{scene_id}")
+    resize_if_needed(query_path)
     try:
         result = VPSService.localize(
             scene_id=scene_id,

@@ -45,20 +45,33 @@ export function poseToStatus(confidence: number, inliers: number): VpsStatus {
   return "failed";
 }
 
-export async function captureVideoFrame(video: HTMLVideoElement): Promise<Blob> {
+const MAX_QUERY_DIMENSION = 1280;
+
+export async function captureVideoFrame(
+  video: HTMLVideoElement,
+  maxDimension: number = MAX_QUERY_DIMENSION
+): Promise<Blob> {
   if (!video.videoWidth || !video.videoHeight) {
     throw new Error("Camera frame is not ready yet.");
   }
 
+  let w = video.videoWidth;
+  let h = video.videoHeight;
+  if (Math.max(w, h) > maxDimension) {
+    const scale = maxDimension / Math.max(w, h);
+    w = Math.round(w * scale);
+    h = Math.round(h * scale);
+  }
+
   const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  canvas.width = w;
+  canvas.height = h;
   const context = canvas.getContext("2d");
   if (!context) {
     throw new Error("Unable to create frame capture context.");
   }
 
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  context.drawImage(video, 0, 0, w, h);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(

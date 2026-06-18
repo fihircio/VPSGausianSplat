@@ -104,3 +104,30 @@ class AgentSessionResponse(BaseModel):
     position: list[float]
     rotation: list[float]
     last_seen: datetime
+
+
+# ---------------------------------------------------------------------------
+# Auth schemas
+# ---------------------------------------------------------------------------
+
+class TokenRequest(BaseModel):
+    api_key: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    tenant_id: str
+    scopes: list[str]
+
+
+class RegisterRequest(BaseModel):
+    name: str
+    contact_email: str | None = None
+    scopes: str = "query"
+
+
+class RegisterResponse(BaseModel):
+    tenant_id: str
+    api_key: str
+    scopes: str
