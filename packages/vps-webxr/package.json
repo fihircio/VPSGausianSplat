@@ -1,0 +1,24 @@
+{
+  "name": "@vps/web-client",
+  "version": "0.1.0",
+  "description": "VPS REST API client for Web/TypeScript applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vps",
+    "localization",
+    "webxr",
+    "spatial"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
