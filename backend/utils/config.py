@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     allow_destructive_endpoints: bool = True
     max_upload_size_mb: int = 500
 
+    # JWT Settings
+    jwt_secret: str = "change-me-in-production-use-a-long-random-string"
+    jwt_algorithm: str = "HS256"
+    jwt_expiry_hours: int = 24
+    admin_api_key: str | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

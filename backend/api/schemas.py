@@ -45,6 +45,7 @@ class LocalizeResponse(BaseModel):
     rotation: list[float]  # [qx, qy, qz, qw]
     inliers: int
     confidence: float
+    hint_used: str | None = None  # e.g. "hintPosition", "hintFloorHeight", "geoHint", null
 
 
 class EvaluationSummary(BaseModel):

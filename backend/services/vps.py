@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 
 import cv2
@@ -16,6 +17,8 @@ from backend.utils.config import get_settings
 from backend.utils.geometry import rotmat_to_quaternion, solve_pnp_pose
 from backend.utils.storage import get_storage
 
+logger = logging.getLogger(__name__)
+
 
 class VPSService:
     MIN_INLIERS = 20
@@ -25,11 +28,17 @@ class VPSService:
         return FeatureService.build_scene_feature_index(scene, db)
 
     @staticmethod
-    def localize(scene_id: str, query_image_path: Path, db: Session) -> dict:
-        return VPSService.localize_image(scene_id=scene_id, query_image_path=query_image_path, db=db)
+    def localize(scene_id: str, query_image_path: Path, db: Session,
+                 hint_position=None, hint_radius=25.0, hint_floor_height=None, geo_hint=None) -> dict:
+        return VPSService.localize_image(
+            scene_id=scene_id, query_image_path=query_image_path, db=db,
+            hint_position=hint_position, hint_radius=hint_radius,
+            hint_floor_height=hint_floor_height, geo_hint=geo_hint,
+        )
 
     @staticmethod
-    def localize_image(scene_id: str, query_image_path: str, db: Session) -> dict:
+    def localize_image(scene_id: str, query_image_path: str, db: Session,
+                       hint_position=None, hint_radius=25.0, hint_floor_height=None, geo_hint=None) -> dict:
         scene = db.get(Scene, scene_id)
         if not scene:
             raise ValueError("Scene not found")
@@ -45,7 +54,11 @@ class VPSService:
         error = None
 
         try:
-            result = VPSService._localize_with_feature_set(scene_id, query_image_path, feature_set, db)
+            result = VPSService._localize_with_feature_set(
+                scene_id, query_image_path, feature_set, db,
+                hint_position=hint_position, hint_radius=hint_radius,
+                hint_floor_height=hint_floor_height, geo_hint=geo_hint,
+            )
         except Exception as e:
             error = e
 
@@ -84,7 +97,10 @@ class VPSService:
         return result
 
     @staticmethod
-    def _localize_with_feature_set(scene_id: str, query_image_path: str, feature_set: FeatureSet, db: Session) -> dict:
+    def _localize_with_feature_set(
+        scene_id: str, query_image_path: str, feature_set: FeatureSet, db: Session,
+        hint_position=None, hint_radius=25.0, hint_floor_height=None, geo_hint=None,
+    ) -> dict:
         storage = get_storage()
         
         # Ensure local copies of index and metadata
@@ -114,6 +130,32 @@ class VPSService:
         if total_matches < 8:
             raise RuntimeError("Insufficient descriptor matches after ratio test")
 
+        hint_used = None
+
+        if hint_position is not None and total_matches >= 8:
+            pos = np.array(hint_position, dtype=np.float32)
+            dists = np.linalg.norm(object_points - pos, axis=1)
+            valid = dists < hint_radius
+            if valid.any():
+                object_points = object_points[valid]
+                image_points = image_points[valid]
+                total_matches = len(object_points)
+                hint_used = "hintPosition"
+                logger.info(f"hintPosition filtered to {total_matches} matches within {hint_radius}m")
+
+        if hint_floor_height is not None and total_matches >= 8:
+            y_min, y_max = hint_floor_height
+            valid = (object_points[:, 1] >= y_min) & (object_points[:, 1] <= y_max)
+            if valid.any():
+                object_points = object_points[valid]
+                image_points = image_points[valid]
+                total_matches = len(object_points)
+                hint_used = "hintFloorHeight" if hint_used is None else f"{hint_used}+hintFloorHeight"
+                logger.info(f"hintFloorHeight [{y_min}, {y_max}] filtered to {total_matches} matches")
+
+        if geo_hint is not None:
+            logger.info(f"geo_hint received but no geo reference stored for scene {scene_id}, skipping")
+
         camera_matrix = VPSService._estimate_query_intrinsics(scene_id=scene_id, db=db, query_image_path=query_image_path)
         success, rvec, tvec, inliers = solve_pnp_pose(object_points, image_points, camera_matrix)
         inlier_count = int(len(inliers))
@@ -134,7 +176,8 @@ class VPSService:
             "rotation": [float(rotation[0]), float(rotation[1]), float(rotation[2]), float(rotation[3])],
             "inliers": inlier_count,
             "confidence": confidence,
-            "mode": feature_set.feature_mode
+            "mode": feature_set.feature_mode,
+            "hint_used": hint_used,
         }
 
     @staticmethod

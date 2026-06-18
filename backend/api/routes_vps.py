@@ -24,12 +24,24 @@ async def localize(
     scene_id: str = Form(...),
     query_image: UploadFile = File(...),
     agent_id: str | None = Form(None),
+    hint_position: str | None = Form(None),
+    hint_radius: float | None = Form(None),
+    hint_floor_height: str | None = Form(None),
+    geo_hint: str | None = Form(None),
     db: Session = Depends(get_db),
 ) -> LocalizeResponse:
     settings = get_settings()
     query_path = save_upload(query_image, f"queries/{scene_id}")
     try:
-        result = VPSService.localize(scene_id=scene_id, query_image_path=query_path, db=db)
+        result = VPSService.localize(
+            scene_id=scene_id,
+            query_image_path=query_path,
+            db=db,
+            hint_position=json.loads(hint_position) if hint_position else None,
+            hint_radius=hint_radius or 25.0,
+            hint_floor_height=json.loads(hint_floor_height) if hint_floor_height else None,
+            geo_hint=json.loads(geo_hint) if geo_hint else None,
+        )
         logger.info(f"Localize result type: {type(result)}")
         logger.info(f"Localize result: {result}")
         # Broadcast to other users if agent_id is provided
