@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     )
     ffmpeg_bin: str = "ffmpeg"
     colmap_bin: str = "colmap"
+    blender_bin: str = "blender"
     gaussian_splatting_repo: str = ""
     default_video_fps: int = 2
     orb_nfeatures: int = 3000
