@@ -28,6 +28,7 @@ import {
   getVpsApiBaseUrl,
   localizeDemoQueryImage,
   localizeVideoFrame,
+  localizeMultiVideoFrame,
   VpsLocalizationResult,
   VpsStatus,
 } from "./lib/vpsClient";
@@ -78,6 +79,7 @@ export default function App() {
   const [vpsSource, setVpsSource] = useState<VpsSource>("none");
   const [isLocalizing, setIsLocalizing] = useState(false);
   const isLocalizingRef = useRef(false);
+  const initialMultiFrameDoneRef = useRef(false);
   const [autoLocalize, setAutoLocalize] = useState(true);
   const defaultSceneId = getDefaultSceneId();
 
@@ -95,6 +97,8 @@ export default function App() {
   const [countdownValue, setCountdownValue] = useState(3);
   const [recordSettingsOpen, setRecordSettingsOpen] = useState(false);
   const [recordResolution, setRecordResolution] = useState<"1080p" | "720p" | "480p">("1080p");
+  const recordResolutionRef = useRef(recordResolution);
+  useEffect(() => { recordResolutionRef.current = recordResolution; }, [recordResolution]);
 
   const RESOLUTION_MAP: Record<string, { width: number; height: number; label: string }> = {
     "1080p": { width: 1920, height: 1080, label: "1080p Full HD" },
@@ -190,6 +194,7 @@ export default function App() {
     if (currentScreen === "ar-view") {
       startCamera();
     } else if (currentScreen !== "record") {
+      initialMultiFrameDoneRef.current = false;
       setVpsStatus("idle");
       setVpsError(null);
       setVpsSource("none");
@@ -211,6 +216,48 @@ export default function App() {
     }
     return () => stopRecordCamera();
   }, [currentScreen]);
+
+  // Multi-frame warmup: collect 4 frames silently before first localization
+  useEffect(() => {
+    if (currentScreen !== "ar-view" || !cameraActive || initialMultiFrameDoneRef.current) {
+      return;
+    }
+
+    const warmup = async () => {
+      const sceneId = selectedDestination?.vpsSceneId || getDefaultSceneId();
+      if (!sceneId || !videoRef.current) {
+        initialMultiFrameDoneRef.current = true;
+        return;
+      }
+      if (isLocalizingRef.current) return;
+
+      isLocalizingRef.current = true;
+      setIsLocalizing(true);
+      setVpsStatus("localizing");
+      setVpsSource("live");
+
+      try {
+        const result = await localizeMultiVideoFrame({
+          video: videoRef.current,
+          sceneId,
+          frameCount: 4,
+          intervalMs: 500,
+          agentId: "navigatus-demo-agent",
+          apiBaseUrl: getVpsApiBaseUrl(),
+        });
+        setVpsResult(result);
+        setVpsStatus(result.status);
+      } catch (err) {
+        console.warn("Multi-frame warmup failed, falling back to single-frame", err);
+      } finally {
+        initialMultiFrameDoneRef.current = true;
+        isLocalizingRef.current = false;
+        setIsLocalizing(false);
+      }
+    };
+
+    warmup();
+  }, [currentScreen, cameraActive, selectedDestination]);
 
   useEffect(() => {
     if (currentScreen !== "ar-view" || !cameraActive || !autoLocalize) {
@@ -298,7 +345,7 @@ export default function App() {
   // --- Recording Functions ---
   const startRecordCamera = useCallback(async () => {
     try {
-      const res = RESOLUTION_MAP[recordResolution];
+      const res = RESOLUTION_MAP[recordResolutionRef.current];
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: { ideal: res.width }, height: { ideal: res.height } },
         audio: false,
@@ -311,9 +358,9 @@ export default function App() {
       setRecordingError("Camera access denied or unavailable");
       console.error("Record camera error", err);
     }
-  }, [recordResolution]);
+  }, []);
 
-  const stopRecordCamera = useCallback(() => {
+  const stopRecordCamera = useCallback(async () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
     }
@@ -325,6 +372,7 @@ export default function App() {
       clearInterval(recordingTimerRef.current);
       recordingTimerRef.current = null;
     }
+    await new Promise((r) => setTimeout(r, 0));
   }, []);
 
   const startRecording = useCallback(() => {
@@ -1237,11 +1285,10 @@ export default function App() {
                 return (
                   <button
                     key={res}
-                    onClick={() => {
+                    onClick={async () => {
                       setRecordResolution(res);
-                      // Restart camera with new resolution
-                      stopRecordCamera();
-                      setTimeout(() => startRecordCamera(), 100);
+                      await stopRecordCamera();
+                      await startRecordCamera();
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition ${
                       recordResolution === res
