@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     allow_destructive_endpoints: bool = True
     max_upload_size_mb: int = 500
 
+    # CORS Settings
+    cors_allowed_origins: str = "*"  # comma-separated or "*" for all
+
     # JWT Settings
     jwt_secret: str = "change-me-in-production-use-a-long-random-string"
     jwt_algorithm: str = "HS256"

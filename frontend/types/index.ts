@@ -112,3 +112,38 @@ export interface ActiveAgent {
   rotation: [number, number, number, number];
   last_seen: string;
 }
+
+// Analytics & Settings types
+export interface CorsOriginsResponse {
+  origins: string[];
+}
+
+export interface SceneAnalytics {
+  scene_id: string;
+  total_queries: number;
+  success_count: number;
+  failure_count: number;
+  success_rate: number;
+  latency_ms: {
+    p50: number;
+    p95: number;
+    p99: number;
+    min: number;
+    max: number;
+    samples: number;
+  } | null;
+}
+
+export interface AnalyticsOverview {
+  total_queries: number;
+  scenes: SceneAnalytics[];
+}
+
+export interface DailyQueryCount {
+  date: string;
+  queries: number;
+}
+
+export interface DailyAnalytics {
+  daily: DailyQueryCount[];
+}

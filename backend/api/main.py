@@ -6,6 +6,8 @@ from fastapi.responses import RedirectResponse
 from backend.api.routes_auth import router as auth_router
 from backend.api.routes_scene import router as scene_router
 from backend.api.routes_vps import router as vps_router
+from backend.api.routes_settings import router as settings_router
+from backend.api.routes_analytics import router as analytics_router
 from backend.utils.config import get_settings
 from backend.utils.db import init_db, SessionLocal
 from backend.utils.storage import get_storage
@@ -48,9 +50,15 @@ else:
         url = storage.get_url(file_path)
         return RedirectResponse(url)
 
+cors_origins_env = settings.cors_allowed_origins
+if cors_origins_env == "*":
+    cors_origins_list = ["*"]
+else:
+    cors_origins_list = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -59,6 +67,8 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(scene_router)
 app.include_router(vps_router)
+app.include_router(settings_router)
+app.include_router(analytics_router)
 
 @app.get("/health")
 def health() -> dict:

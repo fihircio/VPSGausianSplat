@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Layers, Upload, Search, BarChart3, Home, Maximize } from 'lucide-react';
+import { Layers, Upload, Search, BarChart3, Home, Maximize, Shield, Activity } from 'lucide-react';
 
 const navItems = [
   { name: 'Home', href: '/', icon: Home },
@@ -11,6 +11,8 @@ const navItems = [
   { name: 'Upload', href: '/upload', icon: Upload },
   { name: 'Test VPS', href: '/localize', icon: Search },
   { name: 'Investor Deck', href: '/dashboard', icon: BarChart3 },
+  { name: 'Analytics', href: '/analytics', icon: Activity },
+  { name: 'Settings', href: '/settings', icon: Shield },
 ];
 
 export default function Navbar() {

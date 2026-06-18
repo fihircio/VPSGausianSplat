@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport, EvaluationResponse, SceneFramesResponse, Anchor, AnchorCreate } from '../types';
+import { Scene, SceneProcessResponse, LocalizeResponse, EvaluationReport, EvaluationResponse, SceneFramesResponse, Anchor, AnchorCreate, CorsOriginsResponse, AnalyticsOverview, DailyAnalytics } from '../types';
 
 const stripTrailingSlash = (value: string) => value.replace(/\/+$/, '');
 const stripLeadingSlash = (value: string) => value.replace(/^\/+/, '');
@@ -116,7 +116,25 @@ export const api = {
     return data;
   },
 
-  // Get Evaluation Summary
+  // Localize Multi-Frame
+  async localizeMulti(sceneId: string, frameDataUrls: string[]): Promise<LocalizeResponse> {
+    const formData = new FormData();
+    formData.append('scene_id', sceneId);
+    frameDataUrls.forEach((dataUrl, i) => {
+      const byteString = atob(dataUrl.split(',')[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let j = 0; j < byteString.length; j++) {
+        ia[j] = byteString.charCodeAt(j);
+      }
+      const blob = new Blob([ab], { type: 'image/jpeg' });
+      formData.append(`image${i + 1}`, blob, `multi-frame-${i}.jpg`);
+    });
+    const { data } = await client.post<LocalizeResponse>('/vps/localize/multi', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  },
   async getEvaluation(sceneId: string): Promise<EvaluationResponse> {
     const { data } = await client.get<EvaluationResponse>(`/vps/evaluation/${sceneId}`);
     return data;
@@ -152,6 +170,33 @@ export const api = {
 
   async deleteAnchor(sceneId: string, anchorId: string): Promise<void> {
     await client.delete(`/scene/${sceneId}/anchors/${anchorId}`);
+  },
+
+  // CORS Settings
+  async getCorsOrigins(): Promise<CorsOriginsResponse> {
+    const { data } = await client.get<CorsOriginsResponse>('/settings/cors-origins');
+    return data;
+  },
+
+  async addCorsOrigin(origin: string): Promise<CorsOriginsResponse> {
+    const { data } = await client.post<CorsOriginsResponse>('/settings/cors-origins', null, { params: { origin } });
+    return data;
+  },
+
+  async removeCorsOrigin(origin: string): Promise<CorsOriginsResponse> {
+    const { data } = await client.delete<CorsOriginsResponse>(`/settings/cors-origins/${encodeURIComponent(origin)}`);
+    return data;
+  },
+
+  // Analytics
+  async getAnalyticsOverview(): Promise<AnalyticsOverview> {
+    const { data } = await client.get<AnalyticsOverview>('/analytics/overview');
+    return data;
+  },
+
+  async getDailyAnalytics(days: number = 14): Promise<DailyAnalytics> {
+    const { data } = await client.get<DailyAnalytics>('/analytics/daily', { params: { days } });
+    return data;
   },
 
   // Mock Dashboard Data (Fall-back)
