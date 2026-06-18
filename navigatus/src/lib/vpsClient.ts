@@ -190,3 +190,57 @@ export async function localizeDemoQueryImage(params: {
     apiKey: params.apiKey,
   });
 }
+
+export async function localizeMultiVideoFrame(params: {
+  video: HTMLVideoElement;
+  sceneId: string;
+  frameCount?: number;
+  intervalMs?: number;
+  agentId?: string;
+  apiBaseUrl?: string;
+  apiKey?: string;
+}): Promise<VpsLocalizationResult> {
+  const count = params.frameCount || 4;
+  const interval = params.intervalMs || 500;
+  const frames: Blob[] = [];
+
+  for (let i = 0; i < count; i++) {
+    if (i > 0) {
+      await new Promise((r) => setTimeout(r, interval));
+    }
+    const blob = await captureVideoFrame(params.video);
+    frames.push(blob);
+  }
+
+  const formData = new FormData();
+  formData.append("scene_id", params.sceneId);
+  frames.forEach((blob, i) => {
+    formData.append(`image${i + 1}`, blob, `multi-frame-${i}.jpg`);
+  });
+  if (params.agentId) {
+    formData.append("agent_id", params.agentId);
+  }
+
+  const apiBaseUrl = (params.apiBaseUrl || getVpsApiBaseUrl()).replace(/\/+$/, "");
+  const response = await fetch(`${apiBaseUrl}/vps/localize/multi`, {
+    method: "POST",
+    headers: getVpsRequestHeaders(params.apiKey),
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let detail = `Multi-frame localization failed with HTTP ${response.status}`;
+    try {
+      const payload = await response.json();
+      detail = payload.detail || detail;
+    } catch {}
+    throw new Error(detail);
+  }
+
+  const pose = (await response.json()) as VpsPose & { frames_used: number; frame_confidences: number[] };
+  return {
+    pose,
+    status: poseToStatus(pose.confidence, pose.inliers),
+    localizedAt: new Date().toISOString(),
+  };
+}

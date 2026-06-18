@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { 
   Camera, 
@@ -13,7 +13,11 @@ import {
   Loader2, 
   AlertCircle,
   Scan,
-  Compass
+  Compass,
+  Webcam,
+  ImagePlus,
+  Check,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
@@ -32,11 +36,17 @@ function LocalizeContent() {
   const [evalData, setEvalData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [mode, setMode] = useState<'single' | 'multi'>('single');
+  const webcamRef = useRef<HTMLVideoElement>(null);
+  const [webcamActive, setWebcamActive] = useState(false);
+  const [capturedFrames, setCapturedFrames] = useState<string[]>([]);
+  const [capturing, setCapturing] = useState(false);
+
   useEffect(() => {
     if (sceneId) {
       api.getEvaluation(sceneId)
         .then(setEvalData)
-        .catch(() => setEvalData(null)); // Silently fail if no report
+        .catch(() => setEvalData(null));
     }
   }, [sceneId]);
 
@@ -66,6 +76,76 @@ function LocalizeContent() {
     }
   };
 
+  const handleLocalizeMulti = async () => {
+    if (capturedFrames.length === 0 || !sceneId) return;
+
+    setIsLocalizing(true);
+    setError(null);
+
+    try {
+      const resp = await api.localizeMulti(sceneId, capturedFrames);
+      setResult(resp);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || err.message || "Multi-frame localization failed.");
+    } finally {
+      setIsLocalizing(false);
+    }
+  };
+
+  const startWebcam = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      if (webcamRef.current) {
+        webcamRef.current.srcObject = stream;
+        await webcamRef.current.play();
+        setWebcamActive(true);
+        setError(null);
+      }
+    } catch {
+      setError("Webcam access denied or unavailable");
+    }
+  };
+
+  const stopWebcam = () => {
+    if (webcamRef.current?.srcObject) {
+      const stream = webcamRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(t => t.stop());
+      webcamRef.current.srcObject = null;
+    }
+    setWebcamActive(false);
+  };
+
+  const captureFrames = useCallback(async () => {
+    if (!webcamRef.current) return;
+    setCapturing(true);
+    setCapturedFrames([]);
+
+    const newFrames: string[] = [];
+    const video = webcamRef.current;
+
+    for (let i = 0; i < 4; i++) {
+      if (i > 0) {
+        await new Promise(r => setTimeout(r, 500));
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(video, 0, 0);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      newFrames.push(dataUrl);
+      setCapturedFrames([...newFrames]);
+    }
+
+    setCapturing(false);
+    stopWebcam();
+  }, []);
+
+  const clearFrames = () => {
+    setCapturedFrames([]);
+    setResult(null);
+  };
+
   return (
     <div className="vibrant-bg min-h-[calc(100vh-64px)] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -77,8 +157,30 @@ function LocalizeContent() {
               Positioning <span className="text-indigo-600">Sandbox</span>
             </h1>
             <p className="mt-2 text-gray-500 font-medium">
-              Upload a query image to estimate its 6DoF pose against a reconstructed spatial scene.
+              Upload or capture images to estimate 6DoF pose against a reconstructed spatial scene.
             </p>
+          </div>
+
+          {/* Tab Toggle */}
+          <div className="flex bg-white/50 rounded-2xl p-1 border border-gray-100">
+            <button
+              onClick={() => { setMode('single'); setError(null); setResult(null); }}
+              className={cn(
+                "flex-1 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all",
+                mode === 'single' ? "bg-white shadow-md text-indigo-600" : "text-gray-400 hover:text-gray-600"
+              )}
+            >
+              Single Frame
+            </button>
+            <button
+              onClick={() => { setMode('multi'); setError(null); setResult(null); }}
+              className={cn(
+                "flex-1 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all",
+                mode === 'multi' ? "bg-white shadow-md text-indigo-600" : "text-gray-400 hover:text-gray-600"
+              )}
+            >
+              Multi Frame
+            </button>
           </div>
 
           <div className="glass-card space-y-6">
@@ -96,41 +198,186 @@ function LocalizeContent() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Query Image</label>
-              <div 
-                className={cn(
-                  "border-2 border-dashed rounded-3xl transition-all overflow-hidden flex flex-col items-center justify-center min-h-[300px] cursor-pointer",
-                  preview ? "border-indigo-500" : "border-gray-100 hover:border-indigo-300 bg-white/30"
-                )}
-                onClick={() => document.getElementById('query-input')?.click()}
-              >
-                <input 
-                  id="query-input"
-                  type="file" 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-                
-                {preview ? (
-                  <div className="relative w-full h-full group">
-                    <img src={preview} alt="Query" className="w-full h-[300px] object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Search className="h-8 w-8 text-white" />
+            {mode === 'single' ? (
+              <>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Query Image</label>
+                  <div 
+                    className={cn(
+                      "border-2 border-dashed rounded-3xl transition-all overflow-hidden flex flex-col items-center justify-center min-h-[300px] cursor-pointer",
+                      preview ? "border-indigo-500" : "border-gray-100 hover:border-indigo-300 bg-white/30"
+                    )}
+                    onClick={() => document.getElementById('query-input')?.click()}
+                  >
+                    <input 
+                      id="query-input"
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    
+                    {preview ? (
+                      <div className="relative w-full h-full group">
+                        <img src={preview} alt="Query" className="w-full h-[300px] object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Search className="h-8 w-8 text-white" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center p-8">
+                        <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-md mx-auto mb-4">
+                          <Camera className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <p className="text-sm font-bold text-gray-900">Snap or Select Image</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Indoor perspective preferred</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleLocalize}
+                  disabled={isLocalizing || !image || !sceneId}
+                  className={cn(
+                    "w-full py-5 rounded-3xl text-white font-black text-lg tracking-tight uppercase shadow-2xl transition-all flex items-center justify-center space-x-3",
+                    isLocalizing 
+                      ? "bg-indigo-300 cursor-not-allowed" 
+                      : "bg-indigo-600 hover:bg-brand-primary hover:-translate-y-1 active:scale-[0.98]"
+                  )}
+                >
+                  {isLocalizing ? (
+                    <>
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <span>Solving PnP RANSAC...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Scan className="h-6 w-6" />
+                      <span>Estimate Pose</span>
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Webcam Capture */}
+                {!webcamActive && capturedFrames.length === 0 && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Capture 4 Frames</label>
+                    <div 
+                      className="border-2 border-dashed rounded-3xl border-gray-100 hover:border-indigo-300 bg-white/30 min-h-[200px] flex flex-col items-center justify-center cursor-pointer transition-all"
+                      onClick={startWebcam}
+                    >
+                      <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-md mb-4">
+                        <Webcam className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <p className="text-sm font-bold text-gray-900">Start Webcam</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">4 shots at 500ms intervals</p>
                     </div>
                   </div>
-                ) : (
-                  <div className="text-center p-8">
-                    <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-md mx-auto mb-4">
-                      <Camera className="h-8 w-8 text-gray-400" />
+                )}
+
+                {/* Active Webcam */}
+                {webcamActive && (
+                  <div className="space-y-4">
+                    <div className="relative rounded-3xl overflow-hidden bg-black">
+                      <video ref={webcamRef} className="w-full h-[300px] object-cover" playsInline muted />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-16 h-16 border-2 border-white/50 rounded-full" />
+                      </div>
                     </div>
-                    <p className="text-sm font-bold text-gray-900">Snap or Select Image</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Indoor perspective preferred</p>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={captureFrames}
+                        disabled={capturing}
+                        className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-indigo-700 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                      >
+                        {capturing ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            <span>Capturing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="h-5 w-5" />
+                            <span>Capture 4 Frames</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={stopWebcam}
+                        className="px-6 py-4 bg-gray-200 text-gray-600 rounded-2xl font-black text-sm hover:bg-gray-300 transition-all"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
                   </div>
                 )}
-              </div>
-            </div>
+
+                {/* Captured Frame Previews */}
+                {capturedFrames.length > 0 && (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Captured Frames</label>
+                        <button onClick={clearFrames} className="text-[10px] text-red-500 font-black uppercase tracking-wider hover:text-red-600 transition-colors">
+                          Clear
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-4 gap-2">
+                        {capturedFrames.map((frame, i) => (
+                          <div key={i} className="relative rounded-xl overflow-hidden aspect-[3/4] bg-gray-100 border border-gray-200">
+                            <img src={frame} alt={`Frame ${i + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute top-1 left-1 h-5 w-5 bg-indigo-600 rounded-full flex items-center justify-center">
+                              <Check className="h-3 w-3 text-white" />
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 py-1 bg-gradient-to-t from-black/60 to-transparent">
+                              <span className="text-[9px] text-white font-bold ml-2">Frame {i + 1}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={handleLocalizeMulti}
+                      disabled={isLocalizing || !sceneId}
+                      className={cn(
+                        "w-full py-5 rounded-3xl text-white font-black text-lg tracking-tight uppercase shadow-2xl transition-all flex items-center justify-center space-x-3",
+                        isLocalizing 
+                          ? "bg-indigo-300 cursor-not-allowed" 
+                          : "bg-indigo-600 hover:bg-brand-primary hover:-translate-y-1 active:scale-[0.98]"
+                      )}
+                    >
+                      {isLocalizing ? (
+                        <>
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <span>Solving Multi-Frame PnP...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Layers className="h-6 w-6" />
+                          <span>Estimate Pose (Multi-Frame)</span>
+                        </>
+                      )}
+                    </button>
+                  </>
+                )}
+
+                {/* No webcam / no frames state */}
+                {!webcamActive && capturedFrames.length > 0 && (
+                  <div className="text-center py-4">
+                    <button
+                      onClick={startWebcam}
+                      className="text-sm text-indigo-600 font-bold hover:text-indigo-700 transition-colors"
+                    >
+                      Retake frames
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
 
             <AnimatePresence>
               {error && (
@@ -144,29 +391,6 @@ function LocalizeContent() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <button 
-              onClick={handleLocalize}
-              disabled={isLocalizing || !image || !sceneId}
-              className={cn(
-                "w-full py-5 rounded-3xl text-white font-black text-lg tracking-tight uppercase shadow-2xl transition-all flex items-center justify-center space-x-3",
-                isLocalizing 
-                  ? "bg-indigo-300 cursor-not-allowed" 
-                  : "bg-indigo-600 hover:bg-brand-primary hover:-translate-y-1 active:scale-[0.98]"
-              )}
-            >
-              {isLocalizing ? (
-                <>
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                  <span>Solving PnP RANSAC...</span>
-                </>
-              ) : (
-                <>
-                  <Scan className="h-6 w-6" />
-                  <span>Estimate Pose</span>
-                </>
-              )}
-            </button>
           </div>
         </div>
 
@@ -198,18 +422,18 @@ function LocalizeContent() {
                 {/* Major Metrics */}
                 <div className="grid grid-cols-2 gap-6">
                   <AccuracyCard 
-                    label="Euclidean Distance" 
-                    value={evalData ? (evalData.summary.avg_translation_error * 100).toFixed(1) : "---"} 
-                    unit="cm" 
+                    label="Inliers" 
+                    value={String(result.inliers)} 
+                    unit="" 
                     icon={<Target className="text-indigo-500 h-4 w-4" />} 
-                    desc="Tested mean translation error"
+                    desc="Matched 2D-3D correspondences"
                   />
                   <AccuracyCard 
-                    label="Rotation Offset" 
-                    value={evalData ? evalData.summary.avg_rotation_error.toFixed(2) : "---"} 
-                    unit="deg" 
-                    icon={<Compass className="text-brand-secondary h-4 w-4" />} 
-                    desc="Tested mean angular error"
+                    label="Frames Used" 
+                    value={String('frames_used' in result ? (result as any).frames_used : 1)} 
+                    unit="of 4" 
+                    icon={<Layers className="text-brand-secondary h-4 w-4" />} 
+                    desc="Frames with sufficient inliers"
                   />
                 </div>
 
@@ -246,7 +470,9 @@ function LocalizeContent() {
               </div>
               <h3 className="text-lg font-black text-gray-300 uppercase tracking-[0.1em]">Target Locked</h3>
               <p className="mt-2 text-sm text-gray-400 font-medium max-w-xs">
-                Upload a query image on the left to activate the VPS positioning engine.
+                {mode === 'single' 
+                  ? "Upload a query image on the left to activate the VPS positioning engine."
+                  : "Capture 4 frames with webcam for robust multi-frame localization."}
               </p>
             </div>
           )}

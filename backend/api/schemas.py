@@ -48,6 +48,16 @@ class LocalizeResponse(BaseModel):
     hint_used: str | None = None  # e.g. "hintPosition", "hintFloorHeight", "geoHint", null
 
 
+class MultiFrameLocalizeResponse(BaseModel):
+    position: list[float]
+    rotation: list[float]  # [qx, qy, qz, qw]
+    inliers: int
+    confidence: float
+    frames_used: int
+    frame_confidences: list[float]
+    hint_used: str | None = None
+
+
 class EvaluationSummary(BaseModel):
     scene_id: str
     num_frames: int

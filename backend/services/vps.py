@@ -97,6 +97,141 @@ class VPSService:
         return result
 
     @staticmethod
+    def localize_multi(
+        scene_id: str,
+        query_image_paths: list[Path],
+        db: Session,
+        hint_position=None, hint_radius=25.0, hint_floor_height=None, geo_hint=None,
+    ) -> dict:
+        scene = db.get(Scene, scene_id)
+        if not scene:
+            raise ValueError("Scene not found")
+
+        feature_set = db.scalar(
+            select(FeatureSet).where(FeatureSet.scene_id == scene_id).order_by(desc(FeatureSet.id))
+        )
+        if not feature_set:
+            raise RuntimeError("No feature index built for scene")
+
+        storage = get_storage()
+        local_index_path = storage.ensure_local_copy(feature_set.index_path)
+        local_metadata_path = storage.ensure_local_copy(feature_set.metadata_path)
+
+        extractor = FeatureFactory.get_extractor(feature_set.feature_mode)
+        index = faiss.read_index(str(local_index_path))
+        metadata = np.load(str(local_metadata_path))
+        points3d = metadata["points3d"].astype(np.float32)
+        point3d_ids = metadata["point3d_ids"].astype(np.int64)
+
+        all_object_points = []
+        all_image_points = []
+        frame_match_counts = []
+        frame_index_map = []
+
+        for i, img_path in enumerate(query_image_paths):
+            try:
+                local_query_path = storage.ensure_local_copy(img_path)
+                query_kp, query_desc = extractor.extract(local_query_path)
+                if query_desc.shape[0] < 8:
+                    frame_match_counts.append(0)
+                    continue
+
+                distances, indices = index.search(query_desc.astype(np.float32), 2)
+                obj_pts, img_pts, count = VPSService._collect_correspondences(
+                    query_keypoints_xy=query_kp,
+                    distances=distances,
+                    indices=indices,
+                    points3d=points3d,
+                    point3d_ids=point3d_ids,
+                )
+                if count >= 8:
+                    all_object_points.append(obj_pts)
+                    all_image_points.append(img_pts)
+                    frame_index_map.extend([i] * len(obj_pts))
+                frame_match_counts.append(count)
+            except Exception as e:
+                logger.warning(f"Multi-frame frame {i} failed: {e}")
+                frame_match_counts.append(0)
+
+        if not all_object_points:
+            raise RuntimeError("No frame produced enough matches for multi-frame localization")
+
+        combined_object_points = np.concatenate(all_object_points, axis=0).astype(np.float32)
+        combined_image_points = np.concatenate(all_image_points, axis=0).astype(np.float32)
+        frame_idx_arr = np.array(frame_index_map, dtype=np.int32)
+        total_matches = len(combined_object_points)
+
+        hint_used = None
+        if hint_position is not None:
+            pos = np.array(hint_position, dtype=np.float32)
+            dists = np.linalg.norm(combined_object_points - pos, axis=1)
+            valid = dists < hint_radius
+            if valid.any():
+                combined_object_points = combined_object_points[valid]
+                combined_image_points = combined_image_points[valid]
+                frame_idx_arr = frame_idx_arr[valid]
+                total_matches = len(combined_object_points)
+                hint_used = "hintPosition"
+
+        if hint_floor_height is not None and total_matches >= 8:
+            y_min, y_max = hint_floor_height
+            valid = (combined_object_points[:, 1] >= y_min) & (combined_object_points[:, 1] <= y_max)
+            if valid.any():
+                combined_object_points = combined_object_points[valid]
+                combined_image_points = combined_image_points[valid]
+                frame_idx_arr = frame_idx_arr[valid]
+                total_matches = len(combined_object_points)
+                hint_used = "hintFloorHeight" if hint_used is None else f"{hint_used}+hintFloorHeight"
+
+        if geo_hint is not None:
+            logger.info(f"geo_hint received but no geo reference stored for scene {scene_id}, skipping")
+
+        camera_matrix = VPSService._estimate_query_intrinsics(scene_id, db, query_image_paths[0])
+
+        success, rvec, tvec, inliers = solve_pnp_pose(combined_object_points, combined_image_points, camera_matrix)
+        inlier_count = int(len(inliers))
+        confidence = float(inlier_count / max(total_matches, 1))
+
+        if not success or inlier_count < VPSService.MIN_INLIERS:
+            raise RuntimeError(
+                f"Multi-frame localization rejected: {inlier_count} inliers from {total_matches} matches across {len([c for c in frame_match_counts if c >= 8])} frames"
+            )
+
+        inlier_mask = np.zeros(len(combined_object_points), dtype=bool)
+        inlier_mask[list(inliers)] = True
+
+        per_frame_inliers = {}
+        for i in range(len(query_image_paths)):
+            frame_mask = frame_idx_arr == i
+            if frame_mask.any():
+                per_frame_inliers[i] = int(inlier_mask[frame_mask].sum())
+
+        frames_used = sum(1 for v in per_frame_inliers.values() if v >= 10)
+        frame_confidences = []
+        for i in range(len(query_image_paths)):
+            count = frame_match_counts[i]
+            inl = per_frame_inliers.get(i, 0)
+            frame_confidences.append(float(inl / max(count, 1)) if count > 0 else 0.0)
+
+        R_cw, _ = cv2.Rodrigues(rvec)
+        R_wc = R_cw.T
+        position = (-R_wc @ tvec).reshape(3)
+        rotation = rotmat_to_quaternion(R_wc)
+
+        result = {
+            "position": [float(position[0]), float(position[1]), float(position[2])],
+            "rotation": [float(rotation[0]), float(rotation[1]), float(rotation[2]), float(rotation[3])],
+            "inliers": inlier_count,
+            "confidence": confidence,
+            "frames_used": frames_used,
+            "frame_confidences": frame_confidences,
+            "hint_used": hint_used,
+        }
+
+        result = VPSService._apply_calibration(scene_id, result)
+        return result
+
+    @staticmethod
     def _localize_with_feature_set(
         scene_id: str, query_image_path: str, feature_set: FeatureSet, db: Session,
         hint_position=None, hint_radius=25.0, hint_floor_height=None, geo_hint=None,
