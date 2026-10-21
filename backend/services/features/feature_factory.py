@@ -4,9 +4,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import torch
-import kornia.feature as KF
-from kornia.color import rgb_to_grayscale
 
 from backend.utils.config import get_settings
 
@@ -34,11 +31,18 @@ class ORBExtractor(BaseExtractor):
 
 class DISKExtractor(BaseExtractor):
     def __init__(self):
+        import torch
+        import kornia.feature as KF
+        from kornia.color import rgb_to_grayscale
+
         settings = get_settings()
         self.device = torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")
         self.extractor = KF.DISK.from_pretrained('depth').to(self.device).eval()
 
     def extract(self, image_path: Path) -> tuple[np.ndarray, np.ndarray]:
+        import torch
+        import kornia.feature as KF
+
         image_cv = cv2.imread(str(image_path))
         if image_cv is None:
             raise RuntimeError(f"Unable to read image: {image_path}")
