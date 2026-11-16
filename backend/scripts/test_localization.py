@@ -16,6 +16,7 @@ from backend.services.feature_mapper import FeatureMapper
 from backend.services.feature_service import FeatureService
 from backend.utils.db import SessionLocal
 from backend.utils.config import get_settings
+from backend.utils.storage import get_storage
 
 
 def rotation_error_deg(R_pred: np.ndarray, R_gt: np.ndarray) -> float:
@@ -320,8 +321,12 @@ def run_config_evaluation(
 
         if not scene.faiss_index_path or not scene.feature_meta_path:
             raise RuntimeError("Feature index paths were not persisted after indexing")
-        index = faiss.read_index(scene.faiss_index_path)
-        meta = np.load(scene.feature_meta_path)
+        # The persisted paths are storage-relative ("features/<id>/features.faiss"), so
+        # resolve them through the storage provider exactly as VPSService does. Opening
+        # them raw made faiss look under the current directory and fail every frame.
+        storage = get_storage()
+        index = faiss.read_index(str(storage.ensure_local_copy(scene.faiss_index_path)))
+        meta = np.load(str(storage.ensure_local_copy(scene.feature_meta_path)))
         db_descriptors = np.empty((0, 32), dtype=np.uint8)
         db_points3d = meta["points3d"].astype(np.float32)
         db_point_ids = meta["point3d_ids"].astype(np.int64)
