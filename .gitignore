@@ -42,3 +42,8 @@ backend/storage/*.db-wal
 backend/storage/*.db-shm
 backend/storage/cors_origins.json
 check_db.py
+
+# Recovered agent memory: keep the summaries, regenerate the raw transcripts
+# (antigravity_conversations / opencode exports are large derived artifacts).
+antigravity_conversation_*/
+opencode_sessions/
