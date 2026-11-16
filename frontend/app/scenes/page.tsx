@@ -43,23 +43,23 @@ export default function SpatialGalleryPage() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
             <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none mb-4">
-                Spatial <span className="text-brand-primary">Explorer</span>
+                Your <span className="text-brand-primary">maps</span>
             </h1>
             <p className="max-w-2xl text-lg text-gray-500 font-medium">
-                Explore high-fidelity 3D digital twins of our hospital infrastructure. Select a location to enter the immersive mapping layer.
+                Create, monitor, and open the maps used by your visual-positioning pilot. A map is ready for localization only after processing completes.
             </p>
         </div>
 
         {scenes.length === 0 ? (
             <div className="glass-card p-24 text-center">
                 <MapIcon className="h-16 w-16 text-gray-200 mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-gray-900 uppercase">No Spatial Maps Yet</h3>
-                <p className="text-gray-500 mt-2">Start by uploading a video of a floor or room.</p>
+                <h3 className="text-xl font-bold text-gray-900">No maps yet</h3>
+                <p className="text-gray-500 mt-2">Start by uploading a phone video or image capture of one bounded area.</p>
                 <Link 
                     href="/upload"
                     className="mt-6 inline-flex items-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all"
                 >
-                    <span>Begin Mapping</span>
+                    <span>Create map</span>
                     <ArrowRight className="h-4 w-4" />
                 </Link>
             </div>
@@ -104,7 +104,7 @@ function SceneCard({ scene, index }: { scene: Scene, index: number }) {
             </div>
             <div className="flex items-center space-x-1">
                 <Maximize className="h-3 w-3" />
-                <span>{scene.frame_count || 0} Points</span>
+                <span>{scene.frame_count || 0} Frames</span>
             </div>
         </div>
       </div>
@@ -114,7 +114,7 @@ function SceneCard({ scene, index }: { scene: Scene, index: number }) {
             href={`/scenes/${scene.id}`}
             className="flex items-center justify-between w-full px-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-2xl text-xs font-black text-gray-600 transition-all uppercase tracking-widest"
           >
-            <span>Telemetry Details</span>
+            <span>Map details</span>
             <ChevronRight className="h-4 w-4" />
           </Link>
           
@@ -124,7 +124,7 @@ function SceneCard({ scene, index }: { scene: Scene, index: number }) {
                 className="flex items-center justify-center space-x-2 w-full px-5 py-4 bg-gray-900 text-white rounded-2xl text-xs font-black hover:bg-black transition-all shadow-xl shadow-gray-200"
             >
                 <Maximize className="h-4 w-4" />
-                <span>ENTER 3D VIEWER</span>
+                <span>Open 3D viewer</span>
             </Link>
           )}
       </div>

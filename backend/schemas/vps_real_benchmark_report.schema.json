@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vpsgaussiansplat.local/schemas/vps.real_benchmark.report.v1.schema.json",
+  "title": "VPS Real Device Benchmark Report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "benchmark_id",
+    "dataset_type",
+    "split",
+    "scene_id",
+    "map_capture_session_id",
+    "ground_truth_source",
+    "coordinate_frame",
+    "generated_at_utc",
+    "configuration",
+    "data_integrity",
+    "summary",
+    "by_device_model",
+    "by_lighting",
+    "by_site",
+    "queries",
+    "pilot_gate"
+  ],
+  "properties": {
+    "schema_version": { "const": "vps.real_benchmark.v1" },
+    "benchmark_id": { "type": "string", "minLength": 1 },
+    "dataset_type": { "const": "real_device_capture" },
+    "split": { "const": "held_out" },
+    "scene_id": { "type": "string", "minLength": 1 },
+    "map_capture_session_id": { "type": "string", "minLength": 1 },
+    "ground_truth_source": { "type": "string", "minLength": 1 },
+    "coordinate_frame": { "const": "scene_local" },
+    "generated_at_utc": { "type": "string", "format": "date-time" },
+    "configuration": {
+      "type": "object",
+      "required": ["parameter_tuning", "localization_path", "acceptance", "latency_scope"],
+      "properties": {
+        "parameter_tuning": { "const": false },
+        "localization_path": { "const": "VPSService.localize_image" },
+        "acceptance": { "type": "object" },
+        "latency_scope": { "type": "string" }
+      }
+    },
+    "data_integrity": {
+      "type": "object",
+      "required": ["map_frame_files_hash_checked", "map_frame_files_unavailable"],
+      "properties": {
+        "map_frame_files_hash_checked": { "type": "integer", "minimum": 0 },
+        "map_frame_files_unavailable": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "summary": { "$ref": "#/$defs/summary" },
+    "by_device_model": { "$ref": "#/$defs/groupedSummaries" },
+    "by_lighting": { "$ref": "#/$defs/groupedSummaries" },
+    "by_site": { "$ref": "#/$defs/groupedSummaries" },
+    "queries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/queryResult" }
+    },
+    "pilot_gate": {
+      "type": "object",
+      "required": ["success_rate_minimum", "passed", "note"],
+      "properties": {
+        "success_rate_minimum": { "type": "number", "minimum": 0, "maximum": 1 },
+        "passed": { "type": "boolean" },
+        "note": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "metricStats": {
+      "type": "object",
+      "required": ["count", "unit", "median", "p95", "mean"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 0 },
+        "unit": { "type": "string" },
+        "median": { "type": ["number", "null"] },
+        "p95": { "type": ["number", "null"] },
+        "mean": { "type": ["number", "null"] }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "query_count",
+        "localization_returned_count",
+        "accepted_count",
+        "success_rate",
+        "translation_error_m",
+        "rotation_error_deg",
+        "service_latency_ms",
+        "failure_categories"
+      ],
+      "properties": {
+        "query_count": { "type": "integer", "minimum": 0 },
+        "localization_returned_count": { "type": "integer", "minimum": 0 },
+        "accepted_count": { "type": "integer", "minimum": 0 },
+        "success_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "translation_error_m": { "$ref": "#/$defs/metricStats" },
+        "rotation_error_deg": { "$ref": "#/$defs/metricStats" },
+        "service_latency_ms": { "$ref": "#/$defs/metricStats" },
+        "failure_categories": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "groupedSummaries": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/summary" }
+    },
+    "queryResult": {
+      "type": "object",
+      "required": [
+        "query_id",
+        "capture_session_id",
+        "metadata",
+        "localization_returned",
+        "failure_category",
+        "acceptance_failure",
+        "service_latency_ms",
+        "inliers",
+        "confidence",
+        "translation_error_m",
+        "rotation_error_deg"
+      ],
+      "properties": {
+        "query_id": { "type": "string" },
+        "capture_session_id": { "type": "string" },
+        "metadata": { "type": "object" },
+        "localization_returned": { "type": "boolean" },
+        "failure_category": { "type": ["string", "null"] },
+        "acceptance_failure": { "type": ["string", "null"] },
+        "service_latency_ms": { "type": "number", "minimum": 0 },
+        "inliers": { "type": ["integer", "null"], "minimum": 0 },
+        "confidence": { "type": ["number", "null"], "minimum": 0 },
+        "translation_error_m": { "type": ["number", "null"], "minimum": 0 },
+        "rotation_error_deg": { "type": ["number", "null"], "minimum": 0 },
+        "mode": { "type": ["string", "null"] },
+        "failure_detail": { "type": "string" }
+      }
+    }
+  }
+}

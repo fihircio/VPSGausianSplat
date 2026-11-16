@@ -1,3 +1,4 @@
+from io import UnsupportedOperation
 from pathlib import Path
 from uuid import uuid4
 
@@ -24,6 +25,28 @@ from backend.api.auth import validate_api_key
 import threading
 
 router = APIRouter(prefix="/scene", tags=["scene"])
+
+VIDEO_SUFFIXES = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp"}
+GENERIC_CONTENT_TYPES = {"", "application/octet-stream", "binary/octet-stream"}
+
+
+def _upload_size_bytes(file: UploadFile) -> int:
+    """Return the parsed upload size, measuring the seekable spool if needed."""
+    if file.size is not None:
+        return file.size
+    try:
+        stream = file.file
+        position = stream.tell()
+        stream.seek(0, 2)
+        size = stream.tell()
+        stream.seek(position)
+        return size
+    except (AttributeError, OSError, UnsupportedOperation) as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not determine upload size. Retry with a seekable multipart file upload.",
+        ) from exc
 
 
 def _to_storage_web_path(path: str | None) -> str | None:
@@ -94,38 +117,41 @@ def upload_scene(
 
     # Validate file extension
     suffix = Path(file.filename or "").suffix.lower()
-    valid_suffixes = {
-        ".mp4", ".mov", ".avi", ".mkv", ".webm",  # videos
-        ".jpg", ".jpeg", ".png", ".bmp"           # images
-    }
+    valid_suffixes = VIDEO_SUFFIXES | IMAGE_SUFFIXES
     if suffix not in valid_suffixes:
         raise HTTPException(
             status_code=415,
             detail=f"Unsupported file extension {suffix}. Supported formats: {', '.join(sorted(valid_suffixes))}",
         )
 
-    # Validate content type
-    content_type = file.content_type or ""
-    is_video = content_type.startswith("video") or suffix in {
-        ".mp4", ".mov", ".avi", ".mkv", ".webm"
-    }
-    is_image = content_type.startswith("image") or suffix in {
-        ".jpg", ".jpeg", ".png", ".bmp"
-    }
-    if not (is_video or is_image):
+    # The extension selects the processing path. Reject explicitly conflicting
+    # image/video MIME types, but allow generic MIME types used by some clients.
+    is_video = suffix in VIDEO_SUFFIXES
+    content_type = (file.content_type or "").split(";", 1)[0].strip().lower()
+    media_kind = "video" if is_video else "image"
+    declared_kind = content_type.split("/", 1)[0] if "/" in content_type else ""
+    content_type_mismatch = (
+        content_type not in GENERIC_CONTENT_TYPES
+        and declared_kind in {"image", "video"}
+        and declared_kind != media_kind
+    )
+    if content_type_mismatch:
         raise HTTPException(
             status_code=415,
-            detail="Unsupported media type. File must be a valid video or image.",
+            detail=(
+                f"File extension '{suffix}' conflicts with content type '{content_type}'. "
+                f"Upload a {media_kind} file with a matching extension, or use application/octet-stream."
+            ),
         )
 
     # Validate file size
-    if file.size is not None:
-        max_bytes = settings.max_upload_size_mb * 1024 * 1024
-        if file.size > max_bytes:
-            raise HTTPException(
-                status_code=413,
-                detail=f"File is too large ({file.size / 1024 / 1024:.1f} MB). Maximum size allowed is {settings.max_upload_size_mb} MB.",
-            )
+    upload_size = _upload_size_bytes(file)
+    max_bytes = settings.max_upload_size_mb * 1024 * 1024
+    if upload_size > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File is too large ({upload_size / 1024 / 1024:.1f} MB). Maximum size allowed is {settings.max_upload_size_mb} MB.",
+        )
 
     scene_id = str(uuid4())
     dirs = ensure_scene_dirs(scene_id)

@@ -62,7 +62,7 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
     <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-gray-50">
       <div className="text-center">
         <Activity className="h-10 w-10 text-indigo-500 animate-pulse mx-auto transition-all" />
-        <p className="mt-4 text-gray-400 font-bold uppercase tracking-widest text-xs">Accessing Spatial Layer...</p>
+        <p className="mt-4 text-gray-400 font-bold uppercase tracking-widest text-xs">Loading map details…</p>
       </div>
     </div>
   );
@@ -71,13 +71,13 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
     <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-gray-50">
       <div className="glass-card max-w-md text-center">
         <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-gray-900">Scene Disconnected</h2>
-        <p className="mt-2 text-gray-500">{error || "The requested spatial scene could not be retrieved."}</p>
+        <h2 className="text-xl font-bold text-gray-900">Map unavailable</h2>
+        <p className="mt-2 text-gray-500">{error || "The requested map could not be retrieved."}</p>
         <button 
           onClick={() => router.push('/upload')}
           className="mt-6 px-6 py-2 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all font-mono text-sm"
         >
-          _RESET_PIPELINE
+          Create another map
         </button>
       </div>
     </div>
@@ -115,13 +115,13 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
                 className="flex items-center space-x-2 px-8 py-4 bg-brand-primary text-white rounded-2xl font-bold hover:bg-brand-primary/90 transition-all shadow-xl shadow-brand-primary/20"
               >
                 <Maximize className="h-5 w-5" />
-                <span>View 3D Scene</span>
+                <span>Open 3D viewer</span>
               </Link>
               <Link 
                 href={`/localize?scene=${scene.id}`}
                 className="flex items-center space-x-2 px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200"
               >
-                <span>Test Positioning</span>
+                <span>Test localization</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </div>
@@ -157,7 +157,7 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-2 font-black text-xs text-gray-400 uppercase">
                 <Database className="h-3 w-3" />
-                <span>Geospatial Data Stream</span>
+                <span>Map readiness</span>
               </div>
               <button className="p-1 hover:bg-gray-100 rounded">
                 <Maximize className="h-4 w-4 text-gray-400" />
@@ -175,9 +175,9 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
                       className="absolute inset-0 border-2 border-brand-primary rounded-full"
                     />
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 uppercase">Map Reconstructed</h3>
+                  <h3 className="text-2xl font-black text-gray-900 uppercase">Map ready</h3>
                   <p className="text-gray-500 text-sm mt-2 max-w-xs mx-auto font-medium">
-                    The 3D environment has been fully indexed. Sub-decimeter poses are now available for clinical use.
+                    Reconstruction and VPS indexing are complete. You can now inspect the map and run localization queries.
                   </p>
                 </div>
               ) : scene.status === 'FAILED' ? (
@@ -185,7 +185,7 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
                    <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                    <h3 className="text-lg font-bold text-red-600">Pipeline Error</h3>
                    <p className="text-sm text-gray-500 mt-2 font-mono whitespace-pre-wrap max-w-md">
-                     {scene.error_message || "SFM_REGISTRATION_FAILED: Gauge Failure"}
+                     {scene.error_message || "Processing failed before the map became ready."}
                    </p>
                 </div>
               ) : (
@@ -195,7 +195,7 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
                   <div className="space-y-4">
                     <div className="flex justify-between items-end">
                       <p className="text-xs font-black text-indigo-500 uppercase tracking-widest animate-pulse">
-                        {scene.current_task_label || "Calculating Spatial Layer..."}
+                        {scene.current_task_label || "Preparing map…"}
                       </p>
                       <span className="text-xs font-black text-indigo-600">{Math.round(scene.progress_percent)}%</span>
                     </div>
@@ -210,7 +210,7 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
                     
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight italic">
-                      Please wait. Reconstructing sparse point cloud and indexing feature volumes.
+                      Processing may take time. Keep this page open to monitor readiness.
                     </p>
                   </div>
                 </div>
@@ -221,16 +221,16 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
           {/* Metrics Sidebar */}
           <div className="space-y-6">
             <MetricCard 
-              label="Registration Density" 
-              value={evalData ? (evalData.summary.success_rate * 100).toFixed(1) + "%" : (scene.frame_count ? "95.0%" : "---")} 
-              desc="Percentage of camera frames locked to the spatial map."
+              label="Internal evaluation" 
+              value={evalData ? (evalData.summary.success_rate * 100).toFixed(1) + "%" : "---"} 
+              desc="Available only when a saved evaluation report exists."
               icon={<CheckCircle2 className="text-indigo-500 space-x-1 h-4 w-4"/>}
             />
             <MetricCard 
-              label="Point Cloud Scale" 
+              label="Captured frames" 
               value={scene.frame_count ? scene.frame_count.toString() : "0"} 
               unit="Keypoints"
-              desc="Number of high-confidence feature tracks stored."
+              desc="Frames available from the source capture."
               icon={<ChevronRight className="text-indigo-500 h-4 w-4"/>}
             />
 
@@ -238,10 +238,10 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
             <div className="glass-card border-amber-100 bg-amber-50/20 shadow-none">
               <div className="flex items-center space-x-2 text-[10px] font-black text-amber-600 uppercase tracking-widest mb-4">
                 <Database className="h-3 w-3" />
-                <span>Resource Optimization</span>
+                <span>Storage cleanup</span>
               </div>
               <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed mb-4">
-                Reconstruction artifacts and raw videos consume ~124MB of space. Purge them to prepare for public production.
+                Remove raw upload and workspace files after you have confirmed the map and backup policy for this pilot.
               </p>
               
               <button 
@@ -264,9 +264,9 @@ export default function SceneDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="p-6 bg-gray-900 rounded-3xl text-white shadow-2xl">
-              <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Investor Summary</h4>
+              <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">Validation next step</h4>
               <p className="text-sm font-medium leading-relaxed italic border-l-2 border-indigo-500 pl-4">
-                "This capture demonstrates the power of visual SLAM for indoor healthcare settings. Note the extreme stability in low-parallax transitions."
+                "Use a separate real-device capture session for held-out localization testing. Do not treat map-build frames as validation evidence."
               </p>
             </div>
           </div>

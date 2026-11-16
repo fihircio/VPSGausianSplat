@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, FileVideo, X, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, FileVideo, X, CheckCircle2, Loader2, AlertCircle, ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -19,12 +19,13 @@ export default function UploadPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
-      if (selected.type.startsWith('video/') || selected.name.endsWith('.MOV')) {
+      const extension = selected.name.split('.').pop()?.toLowerCase();
+      if (['mp4', 'mov', 'avi', 'mkv', 'webm', 'jpg', 'jpeg', 'png', 'bmp'].includes(extension || '')) {
         setFile(selected);
         setError(null);
         if (!sceneName) setSceneName(selected.name.split('.')[0]);
       } else {
-        setError("Please select a valid video file (.mp4, .mov)");
+        setError("Choose a supported video or still image: MP4, MOV, AVI, MKV, WEBM, JPG, PNG, or BMP.");
       }
     }
   };
@@ -71,10 +72,10 @@ export default function UploadPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl font-extrabold text-gray-900 tracking-tight"
           >
-            Create New <span className="text-brand-primary">VPS Scene</span>
+            Create a new <span className="text-brand-primary">map</span>
           </motion.h1>
           <p className="mt-2 text-gray-500 font-medium">
-            Upload your hospital walkthrough to generate a high-precision 3D anchor.
+            Upload a capture from one bounded area. Processing creates the reconstruction and VPS feature index used for localization.
           </p>
         </div>
 
@@ -94,19 +95,19 @@ export default function UploadPage() {
                 ref={fileInputRef} 
                 onChange={handleFileChange} 
                 className="hidden" 
-                accept="video/*,.mov"
+                accept="video/*,image/*,.mov,.avi,.mkv,.webm,.jpg,.jpeg,.png,.bmp"
               />
               <div className="mx-auto h-16 w-16 bg-indigo-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Upload className="h-8 w-8 text-indigo-500" />
               </div>
-              <p className="mt-4 text-lg font-bold text-gray-900">Click to upload video</p>
-              <p className="mt-1 text-sm text-gray-400 uppercase tracking-widest font-bold">MP4, MOV up to 500MB</p>
+              <p className="mt-4 text-lg font-bold text-gray-900">Choose a capture file</p>
+              <p className="mt-1 text-sm text-gray-400 uppercase tracking-widest font-bold">Video or image · up to 500MB</p>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="flex items-center p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100">
                 <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                  <FileVideo className="h-6 w-6 text-indigo-600" />
+                  {file.type.startsWith('image/') ? <ImageIcon className="h-6 w-6 text-indigo-600" /> : <FileVideo className="h-6 w-6 text-indigo-600" />}
                 </div>
                 <div className="ml-4 flex-1 overflow-hidden">
                   <p className="text-sm font-bold text-gray-900 truncate">{file.name}</p>
@@ -163,7 +164,7 @@ export default function UploadPage() {
                 ) : (
                   <>
                     <CheckCircle2 className="h-5 w-5" />
-                    <span>Initialize Map Generation</span>
+                <span>Create and process map</span>
                   </>
                 )}
               </button>
@@ -182,9 +183,9 @@ export default function UploadPage() {
         </motion.div>
 
         <div className="grid grid-cols-3 gap-4">
-          <InfoCard title="Step 1" desc="Video Upload" active={!file} />
-          <InfoCard title="Step 2" desc="SfM Geometry" active={isUploading && uploadProgress < 60} />
-          <InfoCard title="Step 3" desc="VPS Indexing" active={isUploading && uploadProgress >= 60} />
+          <InfoCard title="Step 1" desc="Capture upload" active={!file} />
+          <InfoCard title="Step 2" desc="Reconstruction" active={isUploading && uploadProgress < 60} />
+          <InfoCard title="Step 3" desc="Ready to localize" active={isUploading && uploadProgress >= 60} />
         </div>
       </div>
     </div>

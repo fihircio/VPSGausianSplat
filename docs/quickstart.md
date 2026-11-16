@@ -20,6 +20,8 @@ Use any phone camera:
 
 ## 2. Upload
 
+The current map-upload endpoint accepts video captures and still images only. See [Supported Map Upload Sources](supported_map_sources.md) for extensions, size limits, and unsupported source types.
+
 ```bash
 curl -X POST http://localhost:8000/scene/upload \
   -H "X-API-Key: YOUR_API_KEY" \

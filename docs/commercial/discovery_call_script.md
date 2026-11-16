@@ -54,8 +54,8 @@ Use these only when relevant:
 
 - We provide visual positioning and persistent spatial anchors.
 - The first pilot is deliberately small and measurable.
-- Google 3D can accelerate outdoor synthetic training and demos where permission allows.
-- Real deployment claims are validated using real device data in the target space.
+- Any synthetic or third-party data use is subject to separate technical and rights review, and is not evidence of performance at the customer's site.
+- Pilot outcomes are measured on agreed real-device samples in the target space; the system may not meet the buyer's target.
 - Unity/Web integration is the first developer path.
 
 ## Red Flags

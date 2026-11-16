@@ -1,76 +1,28 @@
-import Link from 'next/link';
-import { ArrowRight, Camera, Cpu, Globe, GitFork, Layers, MapPin, Search, Shield } from 'lucide-react';
+"use client";
 
-export default function Home() {
-  return (
-    <div className="relative isolate overflow-hidden">
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
-      </div>
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Map, Plus } from "lucide-react";
+import { api } from "@/lib/api";
+import { Scene } from "@/types";
 
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:pt-40">
-        <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
-          <div className="mt-24 sm:mt-32 lg:mt-16">
-            <a href="#" className="inline-flex space-x-6">
-              <span className="rounded-full bg-indigo-600/10 px-3 py-1 text-sm font-semibold leading-6 text-indigo-600 ring-1 ring-inset ring-indigo-600/10">
-                v0.2.0
-              </span>
-              <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
-                <span>Gaussian Splatting VPS — Open Source</span>
-                <ArrowRight className="h-4 w-4 text-gray-400" />
-              </span>
-            </a>
-          </div>
-          <h1 className="mt-10 text-4xl font-black tracking-tighter text-gray-900 sm:text-7xl uppercase">
-            Turn Spaces Into <br/><span className="text-indigo-600">AR Environments</span>
-          </h1>
-          <p className="mt-6 text-xl leading-8 text-gray-600 font-medium">
-            Photorealistic Visual Positioning System. 
-            Upload a phone video — get a 6DoF-localizable scene 
-            with <span className="bg-indigo-50 text-indigo-700 px-2 rounded-lg font-black tracking-tight">~4cm accuracy</span>.
-            No LiDAR, no platform lock-in.
-          </p>
-          <div className="mt-10 flex items-center gap-x-6">
-            <Link
-              href="/upload"
-              className="rounded-xl bg-indigo-600 px-8 py-4 text-lg font-bold text-white shadow-xl shadow-indigo-200 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-all"
-            >
-              Start Mapping
-            </Link>
-            <Link href="/dashboard" className="text-sm font-bold leading-6 text-gray-900 flex items-center group">
-              View Benchmarks <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </div>
-        </div>
-        
-        <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
-          <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-            <div className="rounded-3xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-[2.5rem] lg:p-4 shadow-2xl">
-              <div className="bg-white rounded-2xl shadow-inner p-8 grid grid-cols-2 gap-6 w-full lg:w-[480px]">
-                <FeatureItem icon={<Camera />} title="Video In, Scene Out" desc="Upload. Process. Localize." />
-                <FeatureItem icon={<Cpu />} title="Gaussian Splatting" titleColor="text-orange-600" desc="Photorealistic rendering" />
-                <FeatureItem icon={<Globe />} title="Open REST API" desc="Integrate from any stack" />
-                <FeatureItem icon={<Shield />} title="Private Maps" desc="Self-host or cloud" />
-              </div>
-            </div>
-            <p className="mt-4 text-center text-xs text-gray-400 font-bold uppercase tracking-widest">
-              Used in hospitals · malls · campuses · events
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+const stateStyle: Record<string, string> = { READY: "bg-emerald-50 text-emerald-700", PROCESSING: "bg-indigo-50 text-indigo-700", QUEUED: "bg-amber-50 text-amber-700", UPLOADED: "bg-slate-100 text-slate-700", FAILED: "bg-red-50 text-red-700" };
+
+export default function WorkspacePage() {
+  const [scenes, setScenes] = useState<Scene[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { api.listScenes().then(setScenes).catch(() => setScenes([])).finally(() => setLoading(false)); }, []);
+  const ready = scenes.filter((scene) => scene.status === "READY").length;
+  const processing = scenes.filter((scene) => ["UPLOADED", "QUEUED", "PROCESSING"].includes(scene.status)).length;
+  const latest = [...scenes].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 4);
+  return <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10">
+    <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start"><div><p className="text-sm font-medium text-indigo-600">VPS Studio</p><h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950">Your mapping workspace</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Create a map from a phone capture, track its readiness, then test localization against a prepared scene.</p></div><Link href="/upload" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"><Plus className="h-4 w-4" />Create map</Link></div>
+    <section className="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Workspace summary"><Summary icon={<Map className="h-5 w-5" />} label="Maps" value={loading ? "—" : scenes.length.toString()} detail="Created in this workspace" /><Summary icon={<CheckCircle2 className="h-5 w-5" />} label="Ready to localize" value={loading ? "—" : ready.toString()} detail="Maps with a VPS index" /><Summary icon={<Clock3 className="h-5 w-5" />} label="In progress" value={loading ? "—" : processing.toString()} detail="Upload or processing pipeline" /></section>
+    <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2 className="text-lg font-semibold text-slate-950">Start a pilot map</h2><p className="mt-1 text-sm text-slate-600">Use a stable phone video or image capture. Processing must finish before localization is available.</p></div><Link href="/upload" className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 hover:text-indigo-800">Capture requirements <ArrowRight className="h-4 w-4" /></Link></div><div className="mt-6 grid gap-4 md:grid-cols-3"><Step number="1" title="Capture" text="Record a slow, well-lit walkthrough with landmarks and overlap." /><Step number="2" title="Process" text="Wait for reconstruction and VPS indexing to finish." /><Step number="3" title="Validate" text="Test a separate set of query images against the ready map." /></div></section>
+    <section className="mt-8"><div className="flex items-center justify-between"><div><h2 className="text-lg font-semibold text-slate-950">Recent maps</h2><p className="mt-1 text-sm text-slate-600">Map state and next action at a glance.</p></div><Link href="/scenes" className="text-sm font-semibold text-indigo-700 hover:text-indigo-800">View all maps</Link></div>{loading ? <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-500">Loading maps…</div> : latest.length === 0 ? <EmptyMaps /> : <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white"><div className="divide-y divide-slate-100">{latest.map((scene) => <Link key={scene.id} href={`/scenes/${scene.id}`} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-slate-50"><div className="min-w-0"><p className="truncate font-medium text-slate-900">{scene.name || "Untitled map"}</p><p className="mt-1 text-xs text-slate-500">Created {new Date(scene.created_at).toLocaleDateString()} · {scene.frame_count || 0} frames</p></div><span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${stateStyle[scene.status] || stateStyle.UPLOADED}`}>{scene.status.toLowerCase()}</span></Link>)}</div></div>}</section>
+  </div>;
 }
 
-function FeatureItem({ icon, title, titleColor = "text-indigo-600", desc }: any) {
-  return (
-    <div className="p-4 rounded-xl bg-gray-50 border border-gray-100 transition-transform hover:-translate-y-1">
-      <div className={`mb-2 font-bold flex items-center ${titleColor}`}>
-        <span className="mr-2 opacity-70 scale-75">{icon}</span>
-        {title}
-      </div>
-      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{desc}</div>
-    </div>
-  );
-}
+function Summary({ icon, label, value, detail }: { icon: React.ReactNode; label: string; value: string; detail: string }) { return <div className="rounded-2xl border border-slate-200 bg-white p-5"><div className="flex items-center gap-3 text-indigo-600">{icon}<p className="text-sm font-medium text-slate-600">{label}</p></div><p className="mt-5 text-3xl font-semibold tracking-tight text-slate-950">{value}</p><p className="mt-1 text-xs text-slate-500">{detail}</p></div>; }
+function Step({ number, title, text }: { number: string; title: string; text: string }) { return <div className="rounded-xl bg-slate-50 p-4"><span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">{number}</span><h3 className="mt-3 font-medium text-slate-900">{title}</h3><p className="mt-1 text-sm leading-5 text-slate-600">{text}</p></div>; }
+function EmptyMaps() { return <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center"><CircleAlert className="mx-auto h-8 w-8 text-slate-400" /><h3 className="mt-3 font-semibold text-slate-900">No maps yet</h3><p className="mx-auto mt-1 max-w-sm text-sm text-slate-600">Create your first map from a supported phone capture, then monitor processing here.</p><Link href="/upload" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"><Plus className="h-4 w-4" />Create map</Link></div>; }

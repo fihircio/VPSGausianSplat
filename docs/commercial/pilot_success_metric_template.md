@@ -1,6 +1,6 @@
 # Pilot Success Metric Template
 
-This template is filled out at the start of each pilot to lock measurable success gates. Complete the **Baseline** and **Target** columns before kickoff. Fill **Actual** and **Pass?** at pilot close.
+This template is completed at pilot kickoff. Agree the evaluation protocol and fill the **Baseline** and **Target** columns before collecting held-out evaluation data; fill **Actual** and **Pass?** at closeout. The blank target cells are intentional: the project has no universal, independently validated performance threshold. Do not use this template to imply a guaranteed result.
 
 ---
 
@@ -8,21 +8,21 @@ This template is filled out at the start of each pilot to lock measurable succes
 
 | Metric | Baseline | Target | Actual | Pass? |
 |---|---|---|---|---|
-| Localization success rate | — | ≥ 0.70 | | |
-| Median translation error (m) | — | < 0.30 m | | |
-| P95 translation error (m) | — | < 0.80 m | | |
-| Median rotation error (°) | — | < 8° | | |
-| Time to first localization (s) | — | < 4 s | | |
-| Average inliers per query frame | — | > 30 | | |
-| Average localization confidence | — | > 0.50 | | |
-| Scene processing turnaround | — | < 30 min per floor | | |
-| Map coverage of agreed pilot area | — | ≥ 90 % | | |
+| Localization success rate | — | Customer-agreed: | | |
+| Median translation error (m) | — | Customer-agreed: | | |
+| P95 translation error (m) | — | Customer-agreed: | | |
+| Median rotation error (°) | — | Customer-agreed: | | |
+| Time to first localization (s) | — | Customer-agreed: | | |
+| Localization latency (ms) | — | Customer-agreed: | | |
+| Processing turnaround | — | Customer-agreed: | | |
+| Map coverage of agreed pilot area | — | Customer-agreed: | | |
 
 **Notes on thresholds:**
 
-- `success_rate ≥ 0.70` means at least 7 out of 10 representative test frames localize within the error bounds above.
-- `translation_error < 0.30 m` is the recommended production target. Accept `< 0.50 m` for Pilot tier.
-- Synthetic Google 3D benchmark results are not substitutes for real-device validation. All figures above apply to real device capture on the target site.
+- Define a localized query and the success/error bounds before the evaluation; report the numerator, denominator, and excluded samples.
+- Translation and rotation error require appropriate ground truth. If it is missing or insufficient, mark the metric “not measured”; confidence or inlier counts are not substitutes for position error.
+- Keep setup/tuning data separate from held-out evaluation queries and do not tune against the held-out results.
+- Record device, scene, lighting, capture date, sample count, ground-truth method, and failure categories. Report synthetic benchmark results separately from real-device site results.
 
 ---
 

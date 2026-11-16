@@ -29,3 +29,16 @@ backend/storage/google3d/**/depth/**
 .next/
 node_modules/
 
+
+# --- local runtime state / scratch (added 2026-11-16) ---
+backend*.log*
+backend*.err*
+frontend*.log*
+frontend*.err*
+backend_pip_install.log
+backend/storage/*.db
+backend/storage/*.db-journal
+backend/storage/*.db-wal
+backend/storage/*.db-shm
+backend/storage/cors_origins.json
+check_db.py

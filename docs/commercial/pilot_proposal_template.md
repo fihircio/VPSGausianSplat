@@ -37,22 +37,22 @@ One-sentence objective:
 
 ## 5. Deliverables
 
-- VPS map or synthetic/demo map.
-- Web portal scene.
-- Localization API endpoint.
-- Unity SDK or Navigatus demo.
-- 1-3 persistent anchors.
-- Accuracy and reliability report.
-- Rollout recommendation.
+- One bounded map prepared using an input path confirmed during technical readiness review.
+- Access to the current web portal for the agreed evaluation.
+- Localization API access for the agreed demo path.
+- One supported client path: Navigatus or the Unity REST client.
+- Up to three persistent anchors in the agreed area, subject to readiness.
+- Report of held-out real-device localization outcomes, including sample conditions and failures. Error metrics are reported only when ground truth is available.
+- Go, conditional-go, or no-go recommendation with known operational gaps.
 
 ## 6. Customer Responsibilities
 
 - Approve pilot scope.
-- Provide site/data access.
+- Provide site access and approve any required capture, recording, or data use.
 - Provide site contact for capture/validation.
 - Approve demo content and anchor locations.
-- Attend weekly check-in.
-- Review final report.
+- Review proposed data inputs, deployment, retention, and deletion terms before sharing material.
+- Attend weekly check-in and closeout review.
 
 ## 7. Success Metrics
 
@@ -86,17 +86,26 @@ Commercial:
 
 - Pilot fee:
 - Payment terms:
-- Conversion credit:
+- Any explicitly approved conversion credit (if none, write “none”):
 - Out-of-scope hourly/day rate:
 
 ## 10. Assumptions
 
 - Pilot is limited to agreed area.
 - Accuracy claims require real validation in the target environment.
-- Synthetic Google 3D data may support outdoor demos or training, but does not replace site validation unless explicitly agreed.
+- Synthetic or third-party datasets are separate from customer-site validation and are not included unless their use, rights, and scope are independently confirmed in writing.
+- Supported input formats, hosting, security controls, retention, and deletion must be confirmed for this deployment; do not infer them from code or a draft FAQ.
 - Production rollout requires separate scope and pricing.
 
-## 11. Next Step
+## 11. Support and Service Levels
+
+- Pilot support contact:
+- Agreed support hours:
+- Check-in cadence:
+- Escalation route:
+- No uptime or response-time commitment applies unless written here and approved separately:
+
+## 12. Next Step
 
 - Proposal review date:
 - Decision date:
