@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from typing import Any
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend.models import Base  # noqa: F401
@@ -20,11 +20,39 @@ _engine: Any = None
 _SessionLocal: Any = None
 
 
+def _apply_sqlite_pragmas(dbapi_connection: Any, _connection_record: Any) -> None:
+    """Tune a file-backed SQLite connection for the API + pipeline thread mix.
+
+    The scene pipeline runs in a daemon thread while FastAPI request handlers
+    read and write the same file, so SQLite's defaults would surface as
+    ``database is locked`` errors mid-processing:
+
+    * ``journal_mode=WAL`` lets readers and the single writer run concurrently.
+    * ``busy_timeout`` waits for a competing writer instead of failing at once.
+    * ``synchronous=NORMAL`` is the safe pairing with WAL on a dev workstation.
+    * ``foreign_keys=ON`` matches the referential behaviour Postgres gives us.
+
+    ``:memory:`` databases answer ``memory`` for journal_mode and ignore the
+    rest, so this is harmless for tests.
+    """
+    cursor = dbapi_connection.cursor()
+    try:
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.execute("PRAGMA busy_timeout=15000")
+        cursor.execute("PRAGMA foreign_keys=ON")
+    finally:
+        cursor.close()
+
+
 def _get_engine():
     global _engine, _SessionLocal
     if _engine is None:
         settings = get_settings()
-        _engine = create_engine(settings.database_url, pool_pre_ping=True)
+        database_url = settings.database_url
+        _engine = create_engine(database_url, pool_pre_ping=True)
+        if database_url.startswith("sqlite"):
+            event.listen(_engine, "connect", _apply_sqlite_pragmas)
         _SessionLocal = sessionmaker(
             bind=_engine,
             autoflush=False,
